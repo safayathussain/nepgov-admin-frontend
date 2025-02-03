@@ -5,6 +5,7 @@ import TextInput from "../input/TextInput";
 import Button from "../input/Button";
 import { IoAddOutline } from "react-icons/io5";
 import { RiAddLine } from "react-icons/ri";
+import { usePathname, useRouter } from "next/navigation";
 
 const DynamicTable = ({
   data = [],
@@ -18,7 +19,8 @@ const DynamicTable = ({
     direction: "ascending",
   });
   const [currentPage, setCurrentPage] = useState(1);
-
+  const pathname = usePathname();
+  const router = useRouter();
   // Ensure data is an array
   const safeData = Array.isArray(data) ? data : [];
 
@@ -105,6 +107,7 @@ const DynamicTable = ({
           />
         </div>
         <Button
+          onClick={() => router.push(pathname + "/add")}
           className={"flex !pl-3 font-semibold py-2 items-center text-white"}
         >
           <RiAddLine fontWeight={800} size={25} /> Add
@@ -141,13 +144,22 @@ const DynamicTable = ({
           <tbody>
             {paginatedData.map((item, rowIndex) => (
               <tr key={rowIndex} className="hover:bg-gray-50">
-                {columns.map(({ key, width }) => (
+                {columns.map(({ key, width }, colIndex) => (
                   <td
                     key={key}
                     style={{ width: width ? `${width}px` : "auto" }}
                     className="p-3 border whitespace-nowrap"
                   >
-                    {item[key] ?? "N/A"}
+                    {colIndex === 0 ? ( // Check if it's the first column
+                      <a
+                        href={`${pathname}/${item[key]}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {item[key] ?? "N/A"}
+                      </a>
+                    ) : (
+                      item[key] ?? "N/A"
+                    )}
                   </td>
                 ))}
               </tr>

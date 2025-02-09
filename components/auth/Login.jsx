@@ -1,17 +1,27 @@
-"use client"
-import React, { useState } from 'react';
-import TextInput from '../input/TextInput';
-import Button from '../input/Button';
+"use client";
+import React, { useState } from "react";
+import TextInput from "../input/TextInput";
+import Button from "../input/Button";
+import { FetchApi } from "@/utils/FetchApi";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { setAuth } from "@/redux/slices/AuthSlice";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter()
+const dispatch = useDispatch()
+  const handleSubmit = async (e) => {
+    e.preventDefault(); 
+    const { data } = await FetchApi({
+      method: "post",
+      url: "/auth/admin-signin",
+      data: {email, password},
+      isToast: true,
+    });
+    dispatch(setAuth(data?.data?.user));
+    router.push("/dashboard")
   };
 
   return (
@@ -25,29 +35,22 @@ const Login = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              label={'Email'}
+              label={"Email"}
               required
             />
           </div>
           <div className="mb-6">
-
             <TextInput
-            label={'Password'}
+              label={"Password"}
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              
               required
             />
           </div>
           <div className="flex items-center justify-end">
-            <Button
-              type="submit"
-            >
-              Sign In
-            </Button>
-            
+            <Button type="submit">Log In</Button>
           </div>
         </form>
       </div>

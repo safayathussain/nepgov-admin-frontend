@@ -10,7 +10,7 @@ const layout = ({ children }) => {
       <div className="absolute lg:fixed">
         <SideBar />
       </div>
-      <div className="lg:ml-[260px] lg:p-10 p-5 mt-10 lg:mt-0">
+      <div className="lg:ml-[260px] lg:p-10 p-5 mt-10 lg:mt-0 w-full">
         <p className="capitalize text-2xl font-medium hidden lg:block">
           {params.split("/")[1]?.replace("-", " ")}
         </p>

@@ -1,59 +1,49 @@
-import Table from "@/components/common/Table";
-import React from "react";
+"use client";
 
-const page = () => {
-  const data = [
-    { id: 1, name: "John Doe", age: 9, email: "john@example.com" },
-    {
-      id: 2,
-      name: "safayat2 Doe",
-      age: 0,
-      email: "safayat1 3 121 312443 23 3@example.com",
-    },
-    { id: 3, name: "John Doe", age: 98, email: "john@example.com" },
-    { id: 4, name: "John Doe", age: 6, email: "john@example.com" },
-    { id: 5, name: "John Doe", age: 8, email: "john@example.com" },
-    { id: 6, name: "John Doe", age: 4, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-  ];
+import React, { useEffect, useState } from "react";
+import Table from "@/components/common/Table";
+import { FetchApi } from "@/utils/FetchApi";
+import { formatDate } from "@/utils/functions";  
+
+const Page = () => {
+  const [data, setData] = useState([]);
 
   const columns = [
-    { key: "id", label: "ID" },
-    { key: "name", label: "Name" },
-    { key: "age", label: "Age" },
-    { key: "email", label: "Email" },
+    { key: "title", label: "Page Title" },
+    { key: "page", label: "Page Slug" },
+    { key: "createdAt", label: "Created At" },
+    { key: "updatedAt", label: "Last Updated At" },
   ];
+
+  useEffect(() => {
+    const fetchStaticPages = async () => {
+      const response = await FetchApi({ url: "/static-page" });
+
+      if (response?.data?.success) {
+        const formattedData = response.data.data.map((item) => ({
+          _id: item._id,
+          title: item.title,
+          page: item.page,
+          createdAt: formatDate(item.createdAt),  
+          updatedAt: formatDate(item.updatedAt),  
+        }));
+
+        setData(formattedData);
+      }
+    };
+
+    fetchStaticPages();
+  }, []);
+
   return (
     <div className="w-full">
       <Table
         data={data}
         columns={columns}
-        searchableColumns={["name", "email"]}
+        searchableColumns={["title", "page"]}
       />
     </div>
   );
 };
 
-export default page;
+export default Page;

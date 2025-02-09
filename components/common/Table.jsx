@@ -152,7 +152,7 @@ const DynamicTable = ({
                   >
                     {colIndex === 0 ? ( // Check if it's the first column
                       <a
-                        href={`${pathname}/${item[key]}`}
+                        href={`${pathname}/${item?._id}`}
                         className="text-blue-600 hover:underline"
                       >
                         {item[key] ?? "N/A"}

@@ -15,7 +15,7 @@ const TextEditor = ({
 }) => {
   const { auth } = useAuth();
   const [localEditor, setLocalEditor] = useState(null);
-  
+
   const config = useMemo(
     () => ({
       readonly: false,
@@ -28,11 +28,13 @@ const TextEditor = ({
           Authorization: `Bearer ${auth?.accessToken}`,
         },
         paramName: "files",
+        format: "jpg,png,jpeg",
+        accept: "image/jpeg,image/png,image/jpg",
         process: function (response) {
           if (response?.data?.files) {
             return {
-              files: response.data.files?.map(file => 
-                `${process.env.NEXT_PUBLIC_BASE_IMAGE_API}uploads/${file?.savedName}`
+              files: response.data.files?.map((file) =>
+                `${process.env.NEXT_PUBLIC_BASE_IMAGE_API}/uploads/${file?.savedName}`
               ),
               path: process.env.NEXT_PUBLIC_BASE_IMAGE_API,
               baseurl: process.env.NEXT_PUBLIC_BASE_IMAGE_API,
@@ -49,7 +51,7 @@ const TextEditor = ({
           };
         },
         defaultHandlerSuccess: function (data) {
-          data.files?.forEach(imageUrl => {
+          data.files?.forEach((imageUrl) => {
             const imageTag = `<img src="${imageUrl}" crossOrigin="anonymous" style="max-height: 500px"/>`;
             this.s?.insertHTML(imageTag);
           });
@@ -59,7 +61,8 @@ const TextEditor = ({
       showCharsCounter: false,
       showWordsCounter: false,
       showXPathInStatusbar: false,
-      buttons: "bold,italic,underline,strikethrough,ul,fontsize,paragraph,image,hr,table,link,indent,outdent,left,brush,undo,redo",
+      buttons:
+        "bold,italic,underline,strikethrough,ul,fontsize,paragraph,image,hr,table,link,indent,outdent,left,brush,undo,redo",
     }),
     [auth?.accessToken]
   );
@@ -80,17 +83,17 @@ const TextEditor = ({
     <div>
       <p className="block text-[#4B5563] text-sm mb-0.5">{label}</p>
       <JoditEditor
-      className={`jodit-editor ${className}`}
-      ref={editor}
-      value={content}
-      config={config}
-      tabIndex={1}
-      onChange={newContent => {
-        if (editor?.current) {
-          setContent(newContent);
-        }
-      }}
-    />
+        className={`jodit-editor ${className}`}
+        ref={editor}
+        value={content}
+        config={config}
+        tabIndex={1}
+        onChange={(newContent) => {
+          if (editor?.current) {
+            setContent(newContent);
+          }
+        }}
+      />
     </div>
   );
 };

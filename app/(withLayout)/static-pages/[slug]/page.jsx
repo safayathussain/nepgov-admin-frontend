@@ -21,6 +21,7 @@ const StaticPage = () => {
 
   const pageOptions = [
     { name: "Cookie Policy", value: "cookie-policy" },
+    { name: "About Us", value: "about-us" },
     { name: "Privacy Policy", value: "privacy-policy" },
     { name: "Terms and Conditions", value: "terms-and-conditions" },
   ];

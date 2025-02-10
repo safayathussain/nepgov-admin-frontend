@@ -12,6 +12,7 @@ const DynamicTable = ({
   columns = [],
   itemsPerPage = 10,
   searchableColumns = [],
+  showLiveStatus = false
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
@@ -148,7 +149,7 @@ const DynamicTable = ({
                   <td
                     key={key}
                     style={{ width: width ? `${width}px` : "auto" }}
-                    className="p-3 border whitespace-nowrap"
+                    className="p-3 border max-w-[500px]"
                   >
                     {colIndex === 0 ? ( // Check if it's the first column
                       <a

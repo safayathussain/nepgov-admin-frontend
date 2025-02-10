@@ -15,6 +15,15 @@ const DropdownInput = ({
 }) => {
   return (
     <div>
+      <style>
+        {
+          `
+          .p-inputtext{
+          padding: 9px
+          }
+          `
+        }
+      </style>
       <label className="block text-black text-[15px]">{label}</label>
       <div className="mt-0.5">
         <Dropdown

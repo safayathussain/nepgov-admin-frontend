@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
  
+
+
+.css-1dune0f-MuiInputBase-input-MuiOutlinedInput-input{
+    padding: 10.5px !important;
+}

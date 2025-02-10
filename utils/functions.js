@@ -25,3 +25,16 @@ export const formatDate = (dateString) => {
     year: "numeric",
   });
 };
+
+
+export const isLive = (dateString) => {
+  const currentDate = new Date();
+  const givenDate = new Date(dateString);
+  return givenDate > currentDate;
+};
+export const formatDateTimeLocal = (date) => {
+  if (!date) return ""; // Handle null/undefined values
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) return ""; // Handle invalid dates
+  return parsedDate.toISOString().slice(0, 16); // Format for input[type="datetime-local"]
+};

@@ -12,7 +12,8 @@ const DynamicTable = ({
   columns = [],
   itemsPerPage = 10,
   searchableColumns = [],
-  showLiveStatus = false,
+  showAddButton = true,
+  getRowColor = (item) => "bg-white" // Default row color function
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
@@ -22,7 +23,7 @@ const DynamicTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const pathname = usePathname();
   const router = useRouter();
-  // Ensure data is an array
+
   const safeData = Array.isArray(data) ? data : [];
 
   // Sorting function
@@ -100,12 +101,14 @@ const DynamicTable = ({
             className={"w-full"}
           />
         </div>
-        <Button
-          onClick={() => router.push(pathname + "/add")}
-          className={"flex !pl-3 font-semibold py-2 items-center text-white"}
-        >
-          <RiAddLine fontWeight={800} size={25} /> Add
-        </Button>
+        {showAddButton && (
+          <Button
+            onClick={() => router.push(pathname + "/add")}
+            className={"flex !pl-3 font-semibold py-2 items-center text-white"}
+          >
+            <RiAddLine fontWeight={800} size={25} /> Add
+          </Button>
+        )}
       </div>
       {safeData.length === 0 ? (
         <div className="text-center p-4 text-gray-500">No data available</div>
@@ -113,7 +116,7 @@ const DynamicTable = ({
         <>
           {/* Table */}
           <div className=" w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto">
-            <table className="w-full border-collapse overflow-x-scroll ">
+            <table className="w-full border-collapse overflow-x-scroll">
               <thead>
                 <tr>
                   {columns.map(({ key, label, sortable = true, width }) => (
@@ -140,7 +143,10 @@ const DynamicTable = ({
               </thead>
               <tbody>
                 {paginatedData.map((item, rowIndex) => (
-                  <tr key={rowIndex} className="hover:bg-gray-50">
+                  <tr
+                    key={rowIndex}
+                    className={`${getRowColor(item)} `}
+                  >
                     {columns.map(({ key, width }, colIndex) => (
                       <td
                         key={key}
@@ -150,7 +156,7 @@ const DynamicTable = ({
                         {colIndex === 0 ? ( // Check if it's the first column
                           <a
                             href={`${pathname}/${item?._id}`}
-                            className="text-blue-600 hover:underline"
+                            className="text-blue-600 underline"
                           >
                             {item[key] ?? "N/A"}
                           </a>

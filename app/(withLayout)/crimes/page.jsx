@@ -1,59 +1,59 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Table from "@/components/common/Table";
-import React from "react";
+import { FetchApi } from "@/utils/FetchApi";
+import { formatDate } from "@/utils/functions";
 
-const page = () => {
-  const data = [
-    { id: 1, name: "John Doe", age: 9, email: "john@example.com" },
-    {
-      id: 2,
-      name: "safayat2 Doe",
-      age: 0,
-      email: "safayat1 3 121 312443 23 3@example.com",
-    },
-    { id: 3, name: "John Doe", age: 98, email: "john@example.com" },
-    { id: 4, name: "John Doe", age: 6, email: "john@example.com" },
-    { id: 5, name: "John Doe", age: 8, email: "john@example.com" },
-    { id: 6, name: "John Doe", age: 4, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-  ];
-
+const CrimeReportsPage = () => {
+  const [data, setData] = useState([]);
   const columns = [
-    { key: "id", label: "ID" },
-    { key: "name", label: "Name" },
-    { key: "age", label: "Age" },
-    { key: "email", label: "Email" },
+    { key: "crimeType", label: "Crime Type" },
+    { key: "location", label: "Location" },
+    { key: "time", label: "Time" },
+    { key: "hasVehicle", label: "Has Vehicle" },
+    { key: "hasWeapon", label: "Has Weapon" },
+    { key: "createdAt", label: "Reported At" },
+    { key: "crimeDetails", label: "Crime Details" },
   ];
+  const getRowColor = (item) => {
+    if (!item.isSeenByAdmin) return "bg-red-200";
+    return "bg-white";
+  };
+  useEffect(() => {
+    const fetchCrimeReports = async () => {
+      const response = await FetchApi({ url: "/crime" });
+      if (response?.data?.success) {
+        const formattedData = response.data.data.map((item) => ({
+          _id: item._id,
+          crimeType: item.crimeType,
+          location: item.location,
+          time: item.time,
+          crimeDetails: item.crimeDetails,
+          hasVehicle: item.hasVehicle,
+          hasWeapon: item.hasWeapon,
+          createdAt: formatDate(item.createdAt),
+          isSeenByAdmin: item.isSeenByAdmin,
+        }));
+
+        setData(formattedData);
+      }
+    };
+
+    fetchCrimeReports();
+  }, []);
+
   return (
     <div className="w-full">
       <Table
+        showAddButton={false}
         data={data}
         columns={columns}
-        searchableColumns={["name", "email"]}
+        searchableColumns={["crimeType", "location"]}
+        getRowColor={getRowColor}
       />
     </div>
   );
 };
 
-export default page;
+export default CrimeReportsPage;

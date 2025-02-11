@@ -12,7 +12,7 @@ const DynamicTable = ({
   columns = [],
   itemsPerPage = 10,
   searchableColumns = [],
-  showLiveStatus = false
+  showLiveStatus = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
@@ -84,13 +84,6 @@ const DynamicTable = ({
     }
   }, [totalPages, currentPage]);
 
-  // Render empty state if no data
-  if (safeData.length === 0) {
-    return (
-      <div className="text-center p-4 text-gray-500">No data available</div>
-    );
-  }
-
   return (
     <div className="w-full">
       {/* Search Input */}
@@ -114,85 +107,90 @@ const DynamicTable = ({
           <RiAddLine fontWeight={800} size={25} /> Add
         </Button>
       </div>
-
-      {/* Table */}
-      <div className=" w-[90vw] lg:w-[calc(100vw-400px)] overflow-x-auto">
-        <table className="w-full border-collapse overflow-x-scroll ">
-          <thead>
-            <tr>
-              {columns.map(({ key, label, sortable = true, width }) => (
-                <th
-                  key={key}
-                  onClick={() => sortable && handleSort(key)}
-                  style={{ width: width ? `${width}px` : "auto" }}
-                  className={`p-3 border bg-gray-100 text-left whitespace-nowrap
+      {safeData.length === 0 ? (
+        <div className="text-center p-4 text-gray-500">No data available</div>
+      ) : (
+        <>
+          {/* Table */}
+          <div className=" w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto">
+            <table className="w-full border-collapse overflow-x-scroll ">
+              <thead>
+                <tr>
+                  {columns.map(({ key, label, sortable = true, width }) => (
+                    <th
+                      key={key}
+                      onClick={() => sortable && handleSort(key)}
+                      style={{ width: width ? `${width}px` : "auto" }}
+                      className={`p-3 border bg-gray-100 text-left whitespace-nowrap
                     ${sortable ? "cursor-pointer hover:bg-gray-200" : ""}`}
-                >
-                  <div className="flex items-center">
-                    {label}
-                    {sortable &&
-                      sortConfig.key === key &&
-                      (sortConfig.direction === "ascending" ? (
-                        <FaChevronUp className="ml-2 h-4 w-4" />
-                      ) : (
-                        <FaChevronDown className="ml-2 h-4 w-4" />
-                      ))}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedData.map((item, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-gray-50">
-                {columns.map(({ key, width }, colIndex) => (
-                  <td
-                    key={key}
-                    style={{ width: width ? `${width}px` : "auto" }}
-                    className="p-3 border max-w-[500px]"
-                  >
-                    {colIndex === 0 ? ( // Check if it's the first column
-                      <a
-                        href={`${pathname}/${item?._id}`}
-                        className="text-blue-600 hover:underline"
+                    >
+                      <div className="flex items-center">
+                        {label}
+                        {sortable &&
+                          sortConfig.key === key &&
+                          (sortConfig.direction === "ascending" ? (
+                            <FaChevronUp className="ml-2 h-4 w-4" />
+                          ) : (
+                            <FaChevronDown className="ml-2 h-4 w-4" />
+                          ))}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedData.map((item, rowIndex) => (
+                  <tr key={rowIndex} className="hover:bg-gray-50">
+                    {columns.map(({ key, width }, colIndex) => (
+                      <td
+                        key={key}
+                        style={{ width: width ? `${width}px` : "auto" }}
+                        className="p-3 border max-w-[500px]"
                       >
-                        {item[key] ?? "N/A"}
-                      </a>
-                    ) : (
-                      item[key] ?? "N/A"
-                    )}
-                  </td>
+                        {colIndex === 0 ? ( // Check if it's the first column
+                          <a
+                            href={`${pathname}/${item?._id}`}
+                            className="text-blue-600 hover:underline"
+                          >
+                            {item[key] ?? "N/A"}
+                          </a>
+                        ) : (
+                          item[key] ?? "N/A"
+                        )}
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </tbody>
+            </table>
+          </div>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <span>
-          Page {currentPage} of {totalPages || 1}
-        </span>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 border rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-            }
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 border rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center mt-4">
+            <span>
+              Page {currentPage} of {totalPages || 1}
+            </span>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 border rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

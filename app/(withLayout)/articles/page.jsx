@@ -38,7 +38,7 @@ const Page = () => {
       <Table
         data={data}
         columns={columns}
-        searchableColumns={["title"]}
+        searchableColumns={["title", "categories"]}
       />
     </div>
   );

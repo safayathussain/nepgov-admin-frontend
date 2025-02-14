@@ -38,3 +38,16 @@ export const formatDateTimeLocal = (date) => {
   if (isNaN(parsedDate.getTime())) return ""; // Handle invalid dates
   return parsedDate.toISOString().slice(0, 16); // Format for input[type="datetime-local"]
 };
+
+
+// {
+//   hero: {
+//     dailyQuestion: id,
+//   },
+//   featuredSurveyTracker: {
+//     surveys: [id],
+//     trackers: [id]
+//   },
+//   liveSurveyTracker: [{id, type}]
+
+// }

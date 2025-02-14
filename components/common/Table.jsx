@@ -7,12 +7,13 @@ import { IoAddOutline } from "react-icons/io5";
 import { RiAddLine } from "react-icons/ri";
 import { usePathname, useRouter } from "next/navigation";
 
-const DynamicTable = ({
+const Table = ({
   data = [],
   columns = [],
   itemsPerPage = 10,
   searchableColumns = [],
   showAddButton = true,
+  tableClassName='',
   getRowColor = (item) => "bg-white" // Default row color function
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -115,7 +116,7 @@ const DynamicTable = ({
       ) : (
         <>
           {/* Table */}
-          <div className=" w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto">
+          <div className={`w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto ${tableClassName}`}>
             <table className="w-full border-collapse overflow-x-scroll">
               <thead>
                 <tr>
@@ -201,4 +202,4 @@ const DynamicTable = ({
   );
 };
 
-export default DynamicTable;
+export default Table;

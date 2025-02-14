@@ -1,59 +1,67 @@
+"use client"
+import React, { useEffect, useState } from "react";
 import Table from "@/components/common/Table";
-import React from "react";
+import { FetchApi } from "@/utils/FetchApi";
+import { formatDate, isLive } from "@/utils/functions";
 
-const page = () => {
-  const data = [
-    { id: 1, name: "John Doe", age: 9, email: "john@example.com" },
-    {
-      id: 2,
-      name: "safayat2 Doe",
-      age: 0,
-      email: "safayat1 3 121 312443 23 3@example.com",
-    },
-    { id: 3, name: "John Doe", age: 98, email: "john@example.com" },
-    { id: 4, name: "John Doe", age: 6, email: "john@example.com" },
-    { id: 5, name: "John Doe", age: 8, email: "john@example.com" },
-    { id: 6, name: "John Doe", age: 4, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-    { id: 7, name: "John Doe", age: 5, email: "john@example.com" },
-  ];
+const SurveyTable = () => {
+  const [data, setData] = useState([]);
 
   const columns = [
-    { key: "id", label: "ID" },
-    { key: "name", label: "Name" },
-    { key: "age", label: "Age" },
-    { key: "email", label: "Email" },
+    { key: "topic", label: "Topic" },
+    { key: "questionsCount", label: "Questions" },
+    { key: "totalOptions", label: "Total Options" },
+    { key: "categories", label: "Categories" },
+    { key: "totalVotes", label: "Total Votes" },
+    { key: "createdAt", label: "Created At" },
+    { key: "liveEndedAt", label: "Live Ended At" },
+    { key: "status", label: "Status" },
   ];
+
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      const response = await FetchApi({ url: "/survey" });
+
+      if (response?.data?.success) {
+        const formattedData = response.data.data.map((item) => {
+          const totalVotes = item.questions.reduce((sum, question) => {
+            return sum + question.options.reduce((optSum, opt) => optSum + opt.votedCount, 0);
+          }, 0);
+
+          const totalOptions = item.questions.reduce((sum, question) => {
+            return sum + question.options.length;
+          }, 0);
+
+          return {
+            _id: item._id,
+            topic: item.topic,
+            questionsCount: item.questions.length,
+            totalOptions,
+            categories: item.categories.map((category) => category.name).join(", "),
+            totalVotes,
+            liveEndedAt: formatDate(item.liveEndedAt),
+            createdAt: formatDate(item.createdAt),
+            status: isLive(item.liveEndedAt) ? <div className="text-secondary font-bold">Live</div>: <div className="text-success font-bold">Ended</div>,
+            questions: item.questions
+          };
+        });
+
+        setData(formattedData);
+      }
+    };
+
+    fetchSurveys();
+  }, []);
+ 
+
   return (
-    <div className="w-full">
-      <Table
-        data={data}
-        columns={columns}
-        searchableColumns={["name", "email"]}
-      />
-    </div>
+        <Table
+          showLiveStatus={true}
+          data={data}
+          columns={columns}
+          searchableColumns={["topic", "categories"]}
+        />
   );
 };
 
-export default page;
+export default SurveyTable;

@@ -1,3 +1,4 @@
+"use client"
 import useClickOutside from "@/utils/useClickOutside";
 import React, { useRef } from "react";
 

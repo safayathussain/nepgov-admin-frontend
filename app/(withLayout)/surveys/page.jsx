@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import Table from "@/components/common/Table";
 import { FetchApi } from "@/utils/FetchApi";
@@ -6,6 +6,7 @@ import { formatDate, isLive } from "@/utils/functions";
 
 const SurveyTable = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { key: "topic", label: "Topic" },
@@ -20,6 +21,7 @@ const SurveyTable = () => {
 
   useEffect(() => {
     const fetchSurveys = async () => {
+      setLoading(true);
       const response = await FetchApi({ url: "/survey" });
 
       if (response?.data?.success) {
@@ -48,19 +50,20 @@ const SurveyTable = () => {
 
         setData(formattedData);
       }
+      setLoading(false);
     };
 
     fetchSurveys();
   }, []);
- 
 
   return (
-        <Table
-          showLiveStatus={true}
-          data={data}
-          columns={columns}
-          searchableColumns={["topic", "categories"]}
-        />
+    <Table
+      showLiveStatus={true}
+      data={data}
+      columns={columns}
+      searchableColumns={["topic", "categories"]}
+      loading={loading}
+    />
   );
 };
 

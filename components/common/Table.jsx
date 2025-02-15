@@ -3,9 +3,9 @@ import React, { useState, useMemo } from "react";
 import { FaChevronUp, FaChevronDown, FaSearch } from "react-icons/fa";
 import TextInput from "../input/TextInput";
 import Button from "../input/Button";
-import { IoAddOutline } from "react-icons/io5";
 import { RiAddLine } from "react-icons/ri";
 import { usePathname, useRouter } from "next/navigation";
+import Loading from "./Loading";
 
 const Table = ({
   data = [],
@@ -13,9 +13,11 @@ const Table = ({
   itemsPerPage = 10,
   searchableColumns = [],
   showAddButton = true,
-  tableClassName='',
-  getRowColor = (item) => "bg-white" // Default row color function
+  tableClassName = "",
+  loading = false,
+  getRowColor = (item) => "bg-white", // Default row color function
 }) => {
+  console.log(loading);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -111,12 +113,18 @@ const Table = ({
           </Button>
         )}
       </div>
-      {safeData.length === 0 ? (
+      {loading ? (
+        <div className="mt-20">
+          <Loading />
+        </div>
+      ) : safeData.length === 0 ? (
         <div className="text-center p-4 text-gray-500">No data available</div>
       ) : (
         <>
           {/* Table */}
-          <div className={`w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto ${tableClassName}`}>
+          <div
+            className={`w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto ${tableClassName}`}
+          >
             <table className="w-full border-collapse overflow-x-scroll">
               <thead>
                 <tr>
@@ -144,10 +152,7 @@ const Table = ({
               </thead>
               <tbody>
                 {paginatedData.map((item, rowIndex) => (
-                  <tr
-                    key={rowIndex}
-                    className={`${getRowColor(item)} `}
-                  >
+                  <tr key={rowIndex} className={`${getRowColor(item)} `}>
                     {columns.map(({ key, width }, colIndex) => (
                       <td
                         key={key}

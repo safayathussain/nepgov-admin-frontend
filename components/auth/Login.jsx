@@ -19,9 +19,10 @@ const dispatch = useDispatch()
       url: "/auth/admin-signin",
       data: {email, password},
       isToast: true,
+      callback: () => router.push("/dashboard")
     });
     dispatch(setAuth(data?.data?.user));
-    router.push("/dashboard")
+    
   };
 
   return (

@@ -281,15 +281,6 @@ const SurveyForm = () => {
 
       {activeTab === "basics" && (
         <div className="space-y-6">
-          <TextInput
-            label="Topic"
-            value={surveyData.topic}
-            onChange={(e) =>
-              setSurveyData({ ...surveyData, topic: e.target.value })
-            }
-            required
-          />
-
           <FileInput
             label="Thumbnail"
             img={
@@ -299,6 +290,15 @@ const SurveyForm = () => {
             }
             setImg={(file) => setSurveyData({ ...surveyData, thumbnail: file })}
           />
+          <TextInput
+            label="Topic"
+            value={surveyData.topic}
+            onChange={(e) =>
+              setSurveyData({ ...surveyData, topic: e.target.value })
+            }
+            required
+          />
+
 
           <div className="grid grid-cols-2 gap-5">
             <DropdownInput

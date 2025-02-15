@@ -5,8 +5,6 @@ import React from "react";
 import { useState } from "react";
 import {
   FaBars,
-  FaTimes,
-  FaHome,
 } from "react-icons/fa";
 import { GoHome } from "react-icons/go";
 import { FaHandcuffs } from "react-icons/fa6";
@@ -20,9 +18,10 @@ import { MdOutlineWhereToVote } from "react-icons/md";
 import { BiCategory } from "react-icons/bi";
 import { TbArticle } from "react-icons/tb";
 import { IoClose, IoSettingsOutline } from "react-icons/io5";
+import Button from "../input/Button";
+import { logout } from "@/utils/functions";
 
 const menuItems = [
-  { icon: GoHome, label: "Dashboard", href: "/dashboard" },
   { icon: FaHandcuffs, label: "Crimes", href: "/crimes" },
   { icon: RiSurveyLine, label: "Surveys", href: "/surveys" },
   { icon: MdOutlineWhereToVote, label: "Trackers", href: "/trackers" },
@@ -31,7 +30,6 @@ const menuItems = [
   { icon: TbArticle, label: "Static Pages", href: "/static-pages" },
   { icon: RiPagesLine, label: "Home Page", href: "/home-page" },
   { icon: PiUsersLight, label: "Users", href: "/users" },
-  { icon: IoSettingsOutline, label: "Setting", href: "/setting" },
 ];
 
 const SideBar = () => {
@@ -90,6 +88,9 @@ const SideBar = () => {
                 </a>
               </li>
             ))}
+            <li className="flex justify-center mt-5">
+              <Button onClick={logout} variant="secondary" className={'w-full mx-4'}>Logout</Button>
+            </li>
           </ul>
         </nav>
       </div>

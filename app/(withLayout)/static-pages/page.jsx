@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Table from "@/components/common/Table";
 import { FetchApi } from "@/utils/FetchApi";
-import { formatDate } from "@/utils/functions";  
+import { formatDate } from "@/utils/functions";
 
 const Page = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { key: "title", label: "Page Title" },
@@ -17,6 +18,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchStaticPages = async () => {
+      setLoading(true);
       const response = await FetchApi({ url: "/static-page" });
 
       if (response?.data?.success) {
@@ -24,12 +26,13 @@ const Page = () => {
           _id: item._id,
           title: item.title,
           page: item.page,
-          createdAt: formatDate(item.createdAt),  
-          updatedAt: formatDate(item.updatedAt),  
+          createdAt: formatDate(item.createdAt),
+          updatedAt: formatDate(item.updatedAt),
         }));
 
         setData(formattedData);
       }
+      setLoading(false);
     };
 
     fetchStaticPages();
@@ -41,6 +44,7 @@ const Page = () => {
         data={data}
         columns={columns}
         searchableColumns={["title", "page"]}
+        loading={loading}
       />
     </div>
   );

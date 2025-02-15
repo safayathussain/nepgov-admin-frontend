@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/functions";
 
 const Page = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { key: "name", label: "Category Name" },
@@ -18,6 +19,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoading(true);
       const response = await FetchApi({ url: "/category" });
 
       if (response?.data?.success) {
@@ -27,11 +29,12 @@ const Page = () => {
           surveysCount: item.surveysCount,
           trackersCount: item.trackersCount,
           articleCount: item.articleCount,
-          createdAt: formatDate(item.createdAt), // Formatting createdAt
+          createdAt: formatDate(item.createdAt),
         }));
 
         setData(formattedData);
       }
+      setLoading(false);
     };
 
     fetchCategories();
@@ -43,6 +46,7 @@ const Page = () => {
         data={data}
         columns={columns}
         searchableColumns={["name"]}
+        loading={loading}
       />
     </div>
   );

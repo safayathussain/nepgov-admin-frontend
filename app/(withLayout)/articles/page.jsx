@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/functions";
 
 const Page = () => {
   const [data, setData] = useState([]);
+  const [loading, setloading] = useState(false);
 
   const columns = [
     { key: "title", label: "Title" },
@@ -16,18 +17,20 @@ const Page = () => {
 
   useEffect(() => {
     const fetchArticles = async () => {
+      setloading(true);
       const response = await FetchApi({ url: "/article" });
 
       if (response?.data?.success) {
         const formattedData = response.data.data.map((item, index) => ({
           _id: item._id,
           title: item.title,
-          categories: item.categories.map((cat) => cat.name).join(", "), 
+          categories: item.categories.map((cat) => cat.name).join(", "),
           createdAt: formatDate(item.createdAt),
         }));
 
         setData(formattedData);
       }
+      setloading(false);
     };
 
     fetchArticles();
@@ -36,6 +39,7 @@ const Page = () => {
   return (
     <div className="w-full">
       <Table
+        loading={loading}
         data={data}
         columns={columns}
         searchableColumns={["title", "categories"]}

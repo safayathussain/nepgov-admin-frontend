@@ -7,6 +7,8 @@ import { formatDate } from "@/utils/functions";
 
 const CrimeReportsPage = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const columns = [
     { key: "crimeType", label: "Crime Type" },
     { key: "location", label: "Location" },
@@ -16,12 +18,15 @@ const CrimeReportsPage = () => {
     { key: "createdAt", label: "Reported At" },
     { key: "crimeDetails", label: "Crime Details" },
   ];
+
   const getRowColor = (item) => {
     if (!item.isSeenByAdmin) return "bg-red-200";
     return "bg-white";
   };
+
   useEffect(() => {
     const fetchCrimeReports = async () => {
+      setLoading(true);
       const response = await FetchApi({ url: "/crime" });
       if (response?.data?.success) {
         const formattedData = response.data.data.map((item) => ({
@@ -38,6 +43,7 @@ const CrimeReportsPage = () => {
 
         setData(formattedData);
       }
+      setLoading(false);
     };
 
     fetchCrimeReports();
@@ -51,6 +57,7 @@ const CrimeReportsPage = () => {
         columns={columns}
         searchableColumns={["crimeType", "location"]}
         getRowColor={getRowColor}
+        loading={loading}
       />
     </div>
   );

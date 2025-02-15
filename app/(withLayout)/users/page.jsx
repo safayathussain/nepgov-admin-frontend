@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/functions"; // Ensure the formatDate functio
 
 const Page = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { key: "firstName", label: "First Name" },
@@ -21,6 +22,8 @@ const Page = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
+
       const response = await FetchApi({ url: "/user" });
 
       if (response?.data?.success) {
@@ -29,7 +32,7 @@ const Page = () => {
           firstName: item.firstName,
           lastName: item.lastName,
           email: item.email,
-          dob: item.dob,
+          dob: formatDate(item.dob),
           gender: item.gender,
           city: item.city,
           postCode: item.postCode,
@@ -41,6 +44,8 @@ const Page = () => {
 
         setData(formattedData);
       }
+      setLoading(false);
+
     };
 
     fetchUsers();
@@ -52,6 +57,8 @@ const Page = () => {
         data={data}
         columns={columns}
         searchableColumns={["firstName", "lastName", "email", "city", "dob", "postCode"]}
+        loading={loading}
+showAddButton={false}
       />
     </div>
   );

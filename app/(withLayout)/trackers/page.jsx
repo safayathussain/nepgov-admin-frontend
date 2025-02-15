@@ -7,6 +7,7 @@ import { formatDate, isLive } from "@/utils/functions";
 
 const Page = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { key: "topic", label: "Topic" },
@@ -20,6 +21,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchTrackers = async () => {
+      setLoading(true);
       const response = await FetchApi({ url: "/tracker" });
 
       if (response?.data?.success) {
@@ -32,11 +34,12 @@ const Page = () => {
           createdAt: formatDate(item.createdAt),
           categories: item.categories.map((category) => category.name).join(", "),
           votedCount: item.votedCount,
-          status: isLive(item.liveEndedAt) ? <div className="text-secondary font-bold">Live</div>: <div className="text-success font-bold">Ended</div>
+          status: isLive(item.liveEndedAt) ? <div className="text-secondary font-bold">Live</div> : <div className="text-success font-bold">Ended</div>,
         }));
 
         setData(formattedData);
       }
+      setLoading(false);
     };
 
     fetchTrackers();
@@ -45,10 +48,11 @@ const Page = () => {
   return (
     <div className="w-full">
       <Table
-      showLiveStatus={true}
+        showLiveStatus={true}
         data={data}
         columns={columns}
         searchableColumns={["topic", "user", "categories"]}
+        loading={loading}
       />
     </div>
   );

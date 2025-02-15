@@ -7,11 +7,11 @@ import Button from "@/components/input/Button";
 import Modal from "@/components/modal/Modal";
 import { formatDate } from "@/utils/functions";
 import React, { useState } from "react";
-import ApproveDisapproveColor from "@/components/common/ApproveDisapproveColor";
 import EmptySurveyTracker from "./EmptySurveyTracker";
 import SimpleChart from "@/components/chart/SimpleChart";
 import SurveyStatus from "@/components/common/SurveyStatus";
 import TrackerStatus from "@/components/common/TrackerStatus";
+import OptionsWithColor from "@/components/common/OptionsWithColor";
 
 const FeaturedSurveyTracker = ({
   trackers,
@@ -32,7 +32,7 @@ const FeaturedSurveyTracker = ({
           <div className="lg:w-2/3 h-full">
             {selectedSurvey ? (
               <div className="border">
-                <Link href={`/surveys/${selectedSurvey._id}`}>
+                <div >
                   <Image
                     src="https://i.ibb.co/0rm95Dk/7dfd2d98ea5bcaefbb081aabbbb76ade.jpg"
                     width={874}
@@ -49,7 +49,7 @@ const FeaturedSurveyTracker = ({
                       {formatDate(selectedSurvey.createdAt)}
                     </p>
                   </div>
-                </Link>
+                </div>
               </div>
             ) : (
               <EmptySurveyTracker
@@ -62,9 +62,8 @@ const FeaturedSurveyTracker = ({
           <div className="flex flex-col gap-5 lg:w-1/3">
             {selectedTrackers.length > 0
               ? selectedTrackers.map((tracker) => (
-                  <Link
-                    key={tracker._id}
-                    href={`/trackers/${tracker._id}`}
+                  <div
+                  key={tracker._id}
                     className="p-4 shadow-light border border-[#EBEBEB] flex flex-col justify-between gap-5"
                   >
                     <div>
@@ -74,13 +73,13 @@ const FeaturedSurveyTracker = ({
                           {tracker.categories[0]?.name}
                         </p>
                       </div>
-                      <p className="text-xl font-semibold">{tracker.topic}</p>
-                      <ApproveDisapproveColor />
+                      <p className="text-xl font-semibold mb-2">{tracker.topic}</p>
+                      <OptionsWithColor options={tracker.options}/>
                     </div>
                     <div>
                       <SimpleChart height={190} />
                     </div>
-                  </Link>
+                  </div>
                 ))
               : Array(2)
                   .fill(null)

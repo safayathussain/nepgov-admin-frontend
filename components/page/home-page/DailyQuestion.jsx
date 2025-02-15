@@ -3,20 +3,18 @@
 import Table from "@/components/common/Table";
 import Button from "@/components/input/Button";
 import Modal from "@/components/modal/Modal";
-import { formatDate } from "@/utils/functions";
+import { formatDate, isLive } from "@/utils/functions";
 import React, { useState } from "react";
 import { GoDotFill } from "react-icons/go";
 
 const DailyQuestion = ({ trackers, selectedTracker, onSelectTracker }) => {
   const [showSelectModal, setShowSelectModal] = useState(false);
-
   const columns = [
     { key: "topic", label: "Topic" },
     { key: "createdAt", label: "Created At" },
     { key: "action", label: "Action" },
   ];
-
-  const data = trackers.map((tracker) => ({
+  const data = trackers.filter(item => isLive(item.liveEndedAt)).map((tracker) => ({
     _id: tracker._id,
     topic: tracker.topic,
     createdAt: formatDate(tracker.createdAt),

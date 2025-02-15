@@ -40,14 +40,3 @@ export const formatDateTimeLocal = (date) => {
 };
 
 
-// {
-//   hero: {
-//     dailyQuestion: id,
-//   },
-//   featuredSurveyTracker: {
-//     surveys: [id],
-//     trackers: [id]
-//   },
-//   liveSurveyTracker: [{id, type}]
-
-// }

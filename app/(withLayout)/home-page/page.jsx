@@ -1,13 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Button from "@/components/input/Button";
 import DailyQuestion from "@/components/page/home-page/DailyQuestion";
 import FeaturedSurveyTracker from "@/components/page/home-page/FeaturedSurveyTracker";
 import LiveSurveyTracker from "@/components/page/home-page/LiveSurveyTracker";
 import { FetchApi } from "@/utils/FetchApi";
-import React, { useEffect, useState } from "react";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 const Page = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [trackers, setTrackers] = useState([]);
   const [surveys, setSurveys] = useState([]);
 
@@ -21,23 +23,50 @@ const Page = () => {
   // State for LiveSurveyTracker component
   const [selectedItems, setSelectedItems] = useState([]);
 
-  // Fetch data on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      const [trackerResponse, surveyResponse] = await Promise.all([
-        FetchApi({ url: "/tracker" }),
-        FetchApi({ url: "/survey" }),
-      ]);
+    const fetchAllData = async () => {
+      try {
+        setIsLoading(true);
+        const homePageResponse = await FetchApi({ url: "/home-page" });
+        if (homePageResponse?.data?.success) {
+          const { data } = homePageResponse.data;
+          if (data.hero?.dailyQuestion) {
+            setSelectedTracker(data.hero.dailyQuestion);
+          }
+          if (data.featuredSurveyTracker) {
+            if (data.featuredSurveyTracker.surveys?.length > 0) {
+              setSelectedSurvey(data.featuredSurveyTracker.surveys[0]);
+            }
+            setSelectedTrackers(data.featuredSurveyTracker.trackers || []);
+          }
+          if (data.liveSurveyTracker) {
+            const items = data.liveSurveyTracker.map((item) => ({
+              ...item.data,
+              type: item.type,
+            }));
+            setSelectedItems(items);
+          }
+        }
 
-      if (trackerResponse?.data?.success) {
-        setTrackers(trackerResponse.data.data);
-      }
-      if (surveyResponse?.data?.success) {
-        setSurveys(surveyResponse.data.data);
+        const [trackerResponse, surveyResponse] = await Promise.all([
+          FetchApi({ url: "/tracker" }),
+          FetchApi({ url: "/survey" }),
+        ]);
+
+        if (trackerResponse?.data?.success) {
+          setTrackers(trackerResponse.data.data);
+        }
+        if (surveyResponse?.data?.success) {
+          setSurveys(surveyResponse.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchAllData();
   }, []);
 
   // Handler for selecting a tracker in DailyQuestion
@@ -53,7 +82,9 @@ const Page = () => {
   // Handler for selecting trackers in FeaturedSurveyTracker
   const handleSelectTrackers = (tracker) => {
     if (selectedTrackers.some((t) => t._id === tracker._id)) {
-      setSelectedTrackers(selectedTrackers.filter((t) => t._id !== tracker._id));
+      setSelectedTrackers(
+        selectedTrackers.filter((t) => t._id !== tracker._id)
+      );
     } else if (selectedTrackers.length < 2) {
       setSelectedTrackers([...selectedTrackers, tracker]);
     }
@@ -68,9 +99,40 @@ const Page = () => {
     }
   };
 
+  const handleSaveHomePage = async () => {
+    const homePageData = {
+      hero: {
+        dailyQuestion: selectedTracker?._id || null,
+      },
+      featuredSurveyTracker: {
+        surveys: selectedSurvey ? [selectedSurvey._id] : [],
+        trackers: selectedTrackers.map((t) => t._id),
+      },
+      liveSurveyTracker: selectedItems.map((item) => ({
+        data: item._id,
+        type: item.type,
+      })),
+    };
+
+    const response = await FetchApi({
+      url: "/home-page/update",
+      method: "put",
+      data: homePageData,
+      isToast: true,
+    });
+  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center gap-3">
+          <ProgressSpinner className="border-lightGray" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      {/* Pass state and handlers as props to child components */}
       <DailyQuestion
         trackers={trackers}
         selectedTracker={selectedTracker}
@@ -93,7 +155,16 @@ const Page = () => {
         onSelectItems={handleSelectItems}
       />
       <div className="mt-5">
-        <Button >Save Home Page</Button>
+        <Button onClick={handleSaveHomePage} disabled={isLoading}>
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Saving...
+            </div>
+          ) : (
+            "Save Home Page"
+          )}
+        </Button>
       </div>
     </div>
   );

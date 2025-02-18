@@ -7,6 +7,7 @@ import TextInput from "@/components/input/TextInput";
 import Button from "@/components/input/Button";
 import ConfirmModal from "@/components/modal/ConfirmModal";
 import TextArea from "@/components/input/TextArea";
+import { formatDate } from "@/utils/functions";
 
 const CrimeReportPage = () => {
   const [crimeData, setCrimeData] = useState({
@@ -102,7 +103,7 @@ const CrimeReportPage = () => {
         <TextInput
           label="Time"
           name="time"
-          value={crimeData.time || ""}
+          value={crimeData.time ? formatDate(crimeData?.time) : "Not provided"}
           readOnly
         />
         <div className="hidden lg:block"></div>
@@ -148,13 +149,21 @@ const CrimeReportPage = () => {
         <TextInput
           label="Has Vehicle"
           name="hasVehicle"
-          value={crimeData.hasVehicle || ""}
+          value={
+            crimeData.hasVehicle === "dontKnow"
+              ? "don't know"
+              : crimeData.hasVehicle
+          }
           readOnly
         />
         <TextInput
           label="Has Weapon"
           name="hasWeapon"
-          value={crimeData.hasWeapon || ""}
+          value={
+            crimeData.hasWeapon === "dontKnow"
+              ? "don't know"
+              : crimeData.hasWeapon
+          }
           readOnly
         />
       </div>

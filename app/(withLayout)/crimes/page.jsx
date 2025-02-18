@@ -33,7 +33,7 @@ const CrimeReportsPage = () => {
           _id: item._id,
           crimeType: item.crimeType,
           location: item.location,
-          time: item.time,
+          time: item?.time ? formatDate(item.time): 'Not provided',
           crimeDetails: item.crimeDetails,
           hasVehicle: item.hasVehicle,
           hasWeapon: item.hasWeapon,

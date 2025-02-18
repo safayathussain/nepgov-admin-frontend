@@ -1,7 +1,6 @@
 import React from "react";
 
 const OptionsWithColor = ({ options }) => {
-  console.log(options);
   return (
     <div className="flex items-center flex-wrap gap-3">
       {options.map((item) => (

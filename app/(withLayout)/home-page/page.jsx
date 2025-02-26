@@ -7,6 +7,7 @@ import FeaturedSurveyTracker from "@/components/page/home-page/FeaturedSurveyTra
 import LiveSurveyTracker from "@/components/page/home-page/LiveSurveyTracker";
 import { FetchApi } from "@/utils/FetchApi";
 import { ProgressSpinner } from "primereact/progressspinner";
+import Loading from "@/components/common/Loading";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -125,7 +126,7 @@ const Page = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-3">
-          <ProgressSpinner className="border-lightGray" />
+          <Loading className="border-lightGray" />
         </div>
       </div>
     );

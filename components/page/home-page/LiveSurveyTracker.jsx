@@ -50,9 +50,11 @@ const LiveSurveyTracker = ({
       <p className="text-xl font-medium">Live Survey And Tracker</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-        {selectedItems.map((item) => (
-          <ItemCard key={item._id} item={item} />
-        ))}
+        {selectedItems
+          ?.filter((item) => isLive(item?.liveEndedAt))
+          .map((item) => (
+            <ItemCard key={item._id} item={item} />
+          ))}
 
         <EmptySurveyTracker
           onClick={() => setShowModal(true)}

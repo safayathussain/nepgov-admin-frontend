@@ -11,7 +11,7 @@ export default function Home() {
 
   useEffect(() => {
     if (auth?._id) {
-      router.push("/dashboard");
+      router.push("/crimes");
     }
   }, [auth, router]);  
 

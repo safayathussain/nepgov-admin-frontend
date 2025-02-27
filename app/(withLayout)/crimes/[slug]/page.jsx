@@ -192,9 +192,33 @@ const CrimeReportPage = () => {
           readOnly
         />
         <TextInput
+          label="Country"
+          name="country"
+          value={crimeData?.user?.country || ""}
+          readOnly
+        />
+        <TextInput
+          label="State/Province"
+          name="state_province"
+          value={crimeData?.user?.state_province || ""}
+          readOnly
+        />
+        <TextInput
           label="City"
           name="city"
           value={crimeData?.user?.city || ""}
+          readOnly
+        />
+         <TextInput
+          label="Post Code"
+          name="postCode"
+          value={crimeData?.user?.postCode || ""}
+          readOnly
+        />
+        <TextInput
+          label="Street"
+          name="street"
+          value={crimeData?.user?.street || ""}
           readOnly
         />
         <TextInput

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FetchApi } from "@/utils/FetchApi";
@@ -41,7 +41,7 @@ const UserDetailsPage = () => {
       fetchUserData();
     }
   }, [slug]);
- 
+
   return (
     <div className="flex flex-col w-full">
       <p className="text-2xl font-semibold mt-5">Personal Information</p>
@@ -69,9 +69,15 @@ const UserDetailsPage = () => {
       <p className="text-2xl font-semibold mt-5">Address Details</p>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-3">
         <TextInput
-          label="Street"
-          name="street"
-          value={userData.street || ""}
+          label="Country"
+          name="country"
+          value={userData?.country || ""}
+          readOnly
+        />
+        <TextInput
+          label="State/Province"
+          name="state_province"
+          value={userData?.state_province || ""}
           readOnly
         />
         <TextInput
@@ -81,15 +87,15 @@ const UserDetailsPage = () => {
           readOnly
         />
         <TextInput
-          label="State/Province"
-          name="state_province"
-          value={userData.state_province || ""}
-          readOnly
-        />
-        <TextInput
           label="Post Code"
           name="postCode"
           value={userData.postCode || ""}
+          readOnly
+        />
+        <TextInput
+          label="Street"
+          name="street"
+          value={userData.street || ""}
           readOnly
         />
       </div>
@@ -127,7 +133,6 @@ const UserDetailsPage = () => {
           readOnly
         />
       </div>
- 
     </div>
   );
 };

@@ -10,7 +10,7 @@ export const useAuth = () => {
   };
 };
 export const logout = async () => {
-  await FetchApi({ url: "/auth/logout", method: "post" });
+  await FetchApi({ url: "/auth/admin-logout", method: "post" });
   store.dispatch(setAuth({}));
   window.location.href = "/"
 };

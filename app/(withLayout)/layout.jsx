@@ -1,6 +1,6 @@
 "use client";
 import SideBar from "@/components/common/SideBar";
-import { useAuth } from "@/utils/functions";
+import { logout, useAuth } from "@/utils/functions";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { IoArrowBackOutline } from "react-icons/io5";
@@ -12,6 +12,9 @@ const Layout = ({ children }) => {
   const { auth } = useAuth();
   useEffect(() => {
     if (auth?.role !== "admin") {
+      if(auth?.role){
+        logout()
+      }
       return router.push("/");
     }
   }, []);

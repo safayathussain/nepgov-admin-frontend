@@ -5,14 +5,10 @@ import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer, pers
 import storageLocal from 'redux-persist/lib/storage';
 import storageSession from 'redux-persist/lib/storage/session';
 
-// Check if we're in the browser environment
-const isBrowser = typeof window !== 'undefined';
-const acceptCookies = isBrowser ? localStorage.getItem("acceptCookie") : null;
 
 const persistConfig = {
     key: 'root',
-    // USE SESSION STORAGE FOR THOSE USER WHO DECLINED COOKIES
-    storage: acceptCookies === "accepted" ? storageLocal : storageSession,
+    storage:  storageLocal ,
 }
 
 const persistedReducer = persistReducer(persistConfig, combinedReducers)

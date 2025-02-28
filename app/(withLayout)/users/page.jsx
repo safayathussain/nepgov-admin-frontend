@@ -10,9 +10,9 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
 
   const columns = [
+    { key: "email", label: "Email" },
     { key: "firstName", label: "First Name" },
     { key: "lastName", label: "Last Name" },
-    { key: "email", label: "Email" },
     { key: "dob", label: "Birth" },
     { key: "gender", label: "Gender" },
     { key: "city", label: "City" },
@@ -45,7 +45,6 @@ const Page = () => {
         setData(formattedData);
       }
       setLoading(false);
-
     };
 
     fetchUsers();
@@ -56,9 +55,16 @@ const Page = () => {
       <Table
         data={data}
         columns={columns}
-        searchableColumns={["firstName", "lastName", "email", "city", "dob", "postCode"]}
+        searchableColumns={[
+          "firstName",
+          "lastName",
+          "email",
+          "city",
+          "dob",
+          "postCode",
+        ]}
         loading={loading}
-showAddButton={false}
+        showAddButton={false}
       />
     </div>
   );

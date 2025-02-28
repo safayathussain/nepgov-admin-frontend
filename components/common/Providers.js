@@ -7,10 +7,6 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 const Providers = ({ children }) => {
-  useEffect(() => {
-    localStorage.setItem("acceptCookie", "accepted")
-  }, [])
-  
   
   return (
     <div>

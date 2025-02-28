@@ -11,12 +11,11 @@ export const FetchApi = async ({
   callback = () => {},
   isToast = "",
 }) => {
-  let acceptCookie = localStorage.getItem("acceptCookie");
   let instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_API,
     headers: {
       Authorization: `Bearer ${store.getState().auth?.user?.accessToken || ""}`,
-      "x-user-consent": acceptCookie || "",
+      "x-user-consent":   "accepted",
     },
     withCredentials: true,
   });

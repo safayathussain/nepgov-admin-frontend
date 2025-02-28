@@ -454,7 +454,7 @@ const SurveyForm = () => {
     try {
       await FetchApi({
         method: "delete",
-        url: `/survey/delete/${slug}`,
+        url: `/survey/${slug}`,
         isToast: true,
         callback: () => router.push("/surveys"),
       });
@@ -634,7 +634,8 @@ const SurveyForm = () => {
         title="Are you sure you want to delete this survey?"
         open={isDeleteModalOpen}
         setOpen={setIsDeleteModalOpen}
-        onConfirm={handleDeleteSurvey}
+        
+        nextFunc={handleDeleteSurvey}
       />
     </form>
   );

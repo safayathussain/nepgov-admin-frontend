@@ -70,6 +70,7 @@ const TrackerForm = () => {
                   ? data.data.categories[0]
                   : null,
               liveEndedAt: data.data.liveEndedAt || "",
+              liveStartedAt: data.data.liveStartedAt || "",
               editedOptions: [],
               deletedOptions: [],
             });
@@ -175,7 +176,7 @@ const TrackerForm = () => {
         }
         required
       />
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <DropdownInput
           name="categories"
           label="Select Category"
@@ -189,6 +190,17 @@ const TrackerForm = () => {
             })
           }
         />
+        <div className="hidden md:block">
+
+        </div>
+          <DateTimePicker
+            label="Live Start Date"
+            value={trackerData.liveStartedAt}
+            onChange={(value) =>
+              setTrackerData({ ...trackerData, liveStartedAt: value })
+            }
+            required
+          />
         <DateTimePicker
           label="Live End Date"
           value={trackerData.liveEndedAt}

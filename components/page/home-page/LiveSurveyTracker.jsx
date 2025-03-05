@@ -22,7 +22,7 @@ const LiveSurveyTracker = ({
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-5">
           {item.type === "Survey" ? <SurveyStatus /> : <TrackerStatus />}
-          {isLive(item.liveEndedAt) && (
+          {isLive(item.liveStartedAt, item.liveEndedAt) && (
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-red-500 rounded-full"></span>
               <span className="text-sm text-gray-500">Live</span>
@@ -51,7 +51,7 @@ const LiveSurveyTracker = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
         {selectedItems
-          ?.filter((item) => isLive(item?.liveEndedAt))
+          ?.filter((item) => isLive(item.liveStartedAt, item?.liveEndedAt))
           .map((item) => (
             <ItemCard key={item._id} item={item} />
           ))}
@@ -101,10 +101,10 @@ const LiveSurveyTracker = ({
             ]}
             data={[
               ...trackers
-                .filter((item) => isLive(item.liveEndedAt))
+                .filter((item) => isLive(item.liveStartedAt, item.liveEndedAt))
                 .map((item) => ({ ...item, type: "Tracker" })),
               ...surveys
-                .filter((item) => isLive(item.liveEndedAt))
+                .filter((item) => isLive(item.liveStartedAt, item.liveEndedAt))
                 .map((item) => ({ ...item, type: "Survey" })),
             ]
               .filter((item) =>

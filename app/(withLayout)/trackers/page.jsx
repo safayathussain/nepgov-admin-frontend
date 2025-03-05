@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "@/components/common/Table";
 import { FetchApi } from "@/utils/FetchApi";
-import { formatDate, isLive } from "@/utils/functions";
+import { formatDate, getLiveStatus } from "@/utils/functions";
 
 const Page = () => {
   const [data, setData] = useState([]);
@@ -15,6 +15,7 @@ const Page = () => {
     { key: "categories", label: "Categories" },
     { key: "votedCount", label: "Vote count" },
     { key: "createdAt", label: "Created At" },
+    { key: "liveStartedAt", label: "Live Started At" },
     { key: "liveEndedAt", label: "Live Ended At" },
     { key: "status", label: "Status" },
   ];
@@ -31,10 +32,19 @@ const Page = () => {
           user: item.user,
           options: item.options.map((option) => option.content).join(", "),
           liveEndedAt: formatDate(item.liveEndedAt),
+          liveStartedAt: formatDate(item.liveStartedAt),
           createdAt: formatDate(item.createdAt),
-          categories: item.categories.map((category) => category.name).join(", "),
+          categories: item.categories
+            .map((category) => category.name)
+            .join(", "),
           votedCount: item.votedCount,
-          status: isLive(item.liveEndedAt) ? <div className="text-secondary font-bold">Live</div> : <div className="text-success font-bold">Ended</div>,
+          status: (() => {
+            const { className, label } = getLiveStatus(
+              item.liveStartedAt,
+              item.liveEndedAt
+            );
+            return <div className={`${className} font-bold`}>{label}</div>;
+          })(),
         }));
 
         setData(formattedData);

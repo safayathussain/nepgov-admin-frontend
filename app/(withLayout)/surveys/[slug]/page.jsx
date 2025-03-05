@@ -21,6 +21,7 @@ const SurveyForm = () => {
     deletedQuestions: [],
     categories: null,
     liveEndedAt: "",
+    liveStartedAt: "",
     thumbnail: "",
   });
   const [activeTab, setActiveTab] = useState("basics");
@@ -72,6 +73,7 @@ const SurveyForm = () => {
           deletedQuestions: [],
           categories: data.data.categories?.[0] || null,
           liveEndedAt: data.data.liveEndedAt || "",
+          liveStartedAt: data.data.liveStartedAt || "",
           thumbnail: data.data.thumbnail || "",
         });
       }
@@ -385,6 +387,7 @@ const SurveyForm = () => {
       formData.append("topic", surveyData.topic);
       formData.append("categories[0]", surveyData.categories?._id || "");
       formData.append("liveEndedAt", surveyData.liveEndedAt);
+      formData.append("liveStartedAt", surveyData.liveStartedAt);
       if (surveyData.thumbnail instanceof File) {
         formData.append("thumbnail", surveyData.thumbnail);
       }
@@ -525,7 +528,7 @@ const SurveyForm = () => {
             required
           />
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <DropdownInput
               label="Select Category"
               options={categoryOptions}
@@ -538,6 +541,17 @@ const SurveyForm = () => {
                 }))
               }
             />
+            <div className="hidden md:block">
+
+            </div>
+              <DateTimePicker
+                label="Live Start Date"
+                value={surveyData.liveStartedAt}
+                onChange={(value) =>
+                  setSurveyData((prev) => ({ ...prev, liveStartedAt: value }))
+                }
+                required
+              />
             <DateTimePicker
               label="Live End Date"
               value={surveyData.liveEndedAt}

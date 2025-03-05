@@ -14,7 +14,7 @@ const DailyQuestion = ({ trackers, selectedTracker, onSelectTracker }) => {
     { key: "createdAt", label: "Created At" },
     { key: "action", label: "Action" },
   ];
-  const data = trackers.filter(item => isLive(item.liveEndedAt)).map((tracker) => ({
+  const data = trackers.filter(item => isLive(item.liveStartedAt, item.liveEndedAt)).map((tracker) => ({
     _id: tracker._id,
     topic: tracker.topic,
     createdAt: formatDate(tracker.createdAt),

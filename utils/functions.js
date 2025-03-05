@@ -12,7 +12,7 @@ export const useAuth = () => {
 export const logout = async () => {
   await FetchApi({ url: "/auth/admin-logout", method: "post" });
   store.dispatch(setAuth({}));
-  window.location.href = "/"
+  window.location.href = "/";
 };
 export const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -26,17 +26,34 @@ export const formatDate = (dateString) => {
   });
 };
 
-
-export const isLive = (dateString) => {
+export const isLive = (start, end) => {
   const currentDate = new Date();
-  const givenDate = new Date(dateString);
-  return givenDate > currentDate;
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  return currentDate >= startDate && currentDate <= endDate;
 };
+export const getLiveStatus = (start, end) => {
+  const currentDate = new Date();
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (currentDate < startDate) {
+    return {
+      status: "scheduled",
+      className: "text-warning",
+      label: "Scheduled",
+    };
+  } else if (currentDate >= startDate && currentDate <= endDate) {
+    return { status: "active", className: "text-secondary", label: "Live" };
+  } else {
+    return { status: "closed", className: "text-success", label: "Ended" };
+  }
+};
+
 export const formatDateTimeLocal = (date) => {
   if (!date) return ""; // Handle null/undefined values
   const parsedDate = new Date(date);
   if (isNaN(parsedDate.getTime())) return ""; // Handle invalid dates
   return parsedDate.toISOString().slice(0, 16); // Format for input[type="datetime-local"]
 };
-
-

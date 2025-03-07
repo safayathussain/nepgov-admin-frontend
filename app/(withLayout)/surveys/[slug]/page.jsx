@@ -441,7 +441,7 @@ const SurveyForm = () => {
           url: apiUrl,
           data: formData,
           isToast: true,
-          // callback: () => router.push("/surveys"),
+          callback: () => router.push("/surveys"),
         });
       } catch (error) {
         console.error("Failed to submit survey:", error);

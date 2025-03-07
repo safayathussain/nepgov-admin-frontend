@@ -192,7 +192,7 @@ const TrackerForm = () => {
               color: "#000000",
             };
             return (
-              <div key={index} className="flex space-x-2 items-center w-max">
+              <div key={index} className="flex space-x-2 items-center lg:w-1/2 lg:pr-5">
                 <TextInput
                   placeholder={`Option ${index + 1}`}
                   value={option.content || ""}

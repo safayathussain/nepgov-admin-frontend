@@ -1,11 +1,11 @@
-"use client";
-import React, { useState, useMemo } from "react";
-import { FaChevronUp, FaChevronDown, FaSearch } from "react-icons/fa";
-import TextInput from "../input/TextInput";
-import Button from "../input/Button";
-import { RiAddLine } from "react-icons/ri";
-import { usePathname, useRouter } from "next/navigation";
-import Loading from "./Loading";
+"use client"
+import React, { useState, useMemo } from "react"
+import { FaChevronUp, FaChevronDown, FaAngleUp, FaAngleDown, FaSortUp, FaSortDown } from "react-icons/fa"
+import TextInput from "../input/TextInput"
+import Button from "../input/Button"
+import { RiAddLine } from "react-icons/ri"
+import { usePathname, useRouter } from "next/navigation"
+import Loading from "./Loading"
 
 const Table = ({
   data = [],
@@ -17,76 +17,74 @@ const Table = ({
   loading = false,
   getRowColor = (item) => "bg-white", // Default row color function
 }) => {
-  console.log(loading);
-  const [searchTerm, setSearchTerm] = useState("");
+  console.log(loading)
+  const [searchTerm, setSearchTerm] = useState("")
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
-  });
-  const [currentPage, setCurrentPage] = useState(1);
-  const pathname = usePathname();
-  const router = useRouter();
+  })
+  const [currentPage, setCurrentPage] = useState(1)
+  const pathname = usePathname()
+  const router = useRouter()
 
-  const safeData = Array.isArray(data) ? data : [];
+  const safeData = Array.isArray(data) ? data : []
 
   // Sorting function
   const sortedData = useMemo(() => {
-    if (!sortConfig.key) return safeData;
+    if (!sortConfig.key) return safeData
 
     return [...safeData].sort((a, b) => {
-      const valueA = a[sortConfig.key] ?? "";
-      const valueB = b[sortConfig.key] ?? "";
+      const valueA = a[sortConfig.key] ?? ""
+      const valueB = b[sortConfig.key] ?? ""
 
       if (valueA < valueB) {
-        return sortConfig.direction === "ascending" ? -1 : 1;
+        return sortConfig.direction === "ascending" ? -1 : 1
       }
       if (valueA > valueB) {
-        return sortConfig.direction === "ascending" ? 1 : -1;
+        return sortConfig.direction === "ascending" ? 1 : -1
       }
-      return 0;
-    });
-  }, [safeData, sortConfig]);
+      return 0
+    })
+  }, [safeData, sortConfig])
 
   // Searching function
   const filteredData = useMemo(() => {
     const validSearchColumns =
-      Array.isArray(searchableColumns) && searchableColumns.length
-        ? searchableColumns
-        : columns.map((col) => col.key);
+      Array.isArray(searchableColumns) && searchableColumns.length ? searchableColumns : columns.map((col) => col.key)
 
     return sortedData.filter((item) =>
       validSearchColumns.some((column) =>
         String(item[column] ?? "")
           .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [sortedData, searchTerm, searchableColumns, columns]);
+          .includes(searchTerm.toLowerCase()),
+      ),
+    )
+  }, [sortedData, searchTerm, searchableColumns, columns])
 
   // Pagination
   const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredData.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredData, currentPage, itemsPerPage]);
+    const startIndex = (currentPage - 1) * itemsPerPage
+    return filteredData.slice(startIndex, startIndex + itemsPerPage)
+  }, [filteredData, currentPage, itemsPerPage])
 
   // Sorting handler
   const handleSort = (key) => {
-    let direction = "ascending";
+    let direction = "ascending"
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
+      direction = "descending"
     }
-    setSortConfig({ key, direction });
-  };
+    setSortConfig({ key, direction })
+  }
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
 
   // Reset current page if it becomes invalid
   React.useEffect(() => {
     if (currentPage > totalPages) {
-      setCurrentPage(totalPages || 1);
+      setCurrentPage(totalPages || 1)
     }
-  }, [totalPages, currentPage]);
+  }, [totalPages, currentPage])
 
   return (
     <div className="w-full">
@@ -98,8 +96,8 @@ const Table = ({
             placeholder={`Search by ${searchableColumns.join(", ")}`}
             value={searchTerm}
             onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
+              setSearchTerm(e.target.value)
+              setCurrentPage(1)
             }}
             className={"w-full"}
           />
@@ -122,9 +120,7 @@ const Table = ({
       ) : (
         <>
           {/* Table */}
-          <div
-            className={`w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto ${tableClassName}`}
-          >
+          <div className={`w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto ${tableClassName}`}>
             <table className="w-full border-collapse overflow-x-scroll">
               <thead>
                 <tr>
@@ -136,15 +132,26 @@ const Table = ({
                       className={`p-3 border bg-gray-100 text-left whitespace-nowrap
                     ${sortable ? "cursor-pointer hover:bg-gray-200" : ""}`}
                     >
-                      <div className="flex items-center">
-                        {label}
-                        {sortable &&
-                          sortConfig.key === key &&
-                          (sortConfig.direction === "ascending" ? (
-                            <FaChevronUp className="ml-2 h-4 w-4" />
-                          ) : (
-                            <FaChevronDown className="ml-2 h-4 w-4" />
-                          ))}
+                      <div className="flex items-center justify-between">
+                        <span>{label}</span>
+                        {sortable && (
+                          <div className="flex flex-col ml-2">
+                            <FaSortUp
+                              className={`size-[16px] ${
+                                sortConfig.key === key && sortConfig.direction === "ascending"
+                                  ? "text-blue-600"
+                                  : "text-gray-400"
+                              }`}
+                            />
+                            <FaSortDown
+                              className={`size-[16px] -mt-3 ${
+                                sortConfig.key === key && sortConfig.direction === "descending"
+                                  ? "text-blue-600"
+                                  : "text-gray-400"
+                              }`}
+                            />
+                          </div>
+                        )}
                       </div>
                     </th>
                   ))}
@@ -160,14 +167,11 @@ const Table = ({
                         className="p-3 border max-w-[500px]"
                       >
                         {colIndex === 0 ? ( // Check if it's the first column
-                          <a
-                            href={`${pathname}/${item?._id}`}
-                            className="text-blue-600 underline"
-                          >
+                          <a href={`${pathname}/${item?._id}`} className="text-blue-600 underline">
                             {item[key] ?? "N/A"}
                           </a>
                         ) : (
-                          item[key] ?? "N/A"
+                          (item[key] ?? "N/A")
                         )}
                       </td>
                     ))}
@@ -191,9 +195,7 @@ const Table = ({
                 Previous
               </button>
               <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                }
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
                 className="px-4 py-2 border rounded disabled:opacity-50"
               >
@@ -204,7 +206,8 @@ const Table = ({
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Table;
+export default Table
+

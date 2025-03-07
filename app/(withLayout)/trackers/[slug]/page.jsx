@@ -8,6 +8,7 @@ import DropdownInput from "@/components/input/DropdownInput";
 import Button from "@/components/input/Button";
 import DateTimePicker from "@/components/input/DateTimePicker";
 import ConfirmModal from "@/components/modal/ConfirmModal";
+import { IoClose } from "react-icons/io5";
 
 const TrackerForm = () => {
   const [trackerData, setTrackerData] = useState({
@@ -20,8 +21,6 @@ const TrackerForm = () => {
   });
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [newOptionContent, setNewOptionContent] = useState("");
-  const [newOptionColor, setNewOptionColor] = useState("#000000");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { slug } = useParams();
   const router = useRouter();
@@ -85,49 +84,23 @@ const TrackerForm = () => {
     }
   }, [slug, isEditing]);
 
-  const handleOptionChange = (index, field, value) => {
-    const newOptions = [...trackerData.options];
-    newOptions[index][field] = value;
-    setTrackerData((prev) => ({
-      ...prev,
-      options: newOptions,
-      editedOptions: [
-        ...prev.editedOptions.filter(
-          (opt) => opt._id !== newOptions[index]._id
-        ),
-        newOptions[index],
-      ],
-    }));
-  };
-
-  const addOption = () => {
-    if (!newOptionContent.trim()) return;
-
-    const newOption = { content: newOptionContent, color: newOptionColor };
-    setTrackerData((prev) => ({
-      ...prev,
-      options: [...prev.options, newOption],
-      editedOptions: [...prev.editedOptions, newOption],
-    }));
-    setNewOptionContent("");
-    setNewOptionColor("#000000");
-  };
-
-  const removeOption = (index) => {
-    const optionToRemove = trackerData.options[index];
-    setTrackerData((prev) => ({
-      ...prev,
-      options: prev.options.filter((_, i) => i !== index),
-      deletedOptions: [...prev.deletedOptions, optionToRemove],
-    }));
-  };
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
     setIsLoading(true);
+
+    // Filter out empty options
+    const filteredOptions = trackerData.options.filter(
+      (option) => option && option.content.trim()
+    );
 
     const formattedData = {
       ...trackerData,
+      options: filteredOptions,
+      // Include editedOptions and deletedOptions for the API
+      editedOptions: trackerData.editedOptions.filter(
+        (option) => option && option.content?.trim()
+      ),
+      deletedOptions: trackerData.deletedOptions,
       categories: trackerData.categories ? [trackerData.categories._id] : [],
     };
 
@@ -190,17 +163,15 @@ const TrackerForm = () => {
             })
           }
         />
-        <div className="hidden md:block">
-
-        </div>
-          <DateTimePicker
-            label="Live Start Date"
-            value={trackerData.liveStartedAt}
-            onChange={(value) =>
-              setTrackerData({ ...trackerData, liveStartedAt: value })
-            }
-            required
-          />
+        <div className="hidden md:block"></div>
+        <DateTimePicker
+          label="Live Start Date"
+          value={trackerData.liveStartedAt}
+          onChange={(value) =>
+            setTrackerData({ ...trackerData, liveStartedAt: value })
+          }
+          required
+        />
         <DateTimePicker
           label="Live End Date"
           value={trackerData.liveEndedAt}
@@ -210,55 +181,188 @@ const TrackerForm = () => {
           required
         />
       </div>
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Options
+      <div>
+        <label className="block text-black text-[15px] mb-1">
+          Options (Min: 2, Max: 4)
         </label>
-        {trackerData.options.map((option, index) => (
-          <div key={index} className="flex space-x-2">
-            <TextInput
-              placeholder="Option content"
-              value={option.content}
-              onChange={(e) =>
-                handleOptionChange(index, "content", e.target.value)
-              }
-              required
-              className="w-full"
-            />
-            <input
-              type="color"
-              value={option.color}
-              onChange={(e) =>
-                handleOptionChange(index, "color", e.target.value)
-              }
-              className="h-10 w-10"
-            />
-            {trackerData.options.length > 1 && (
-              <Button type="button" onClick={() => removeOption(index)}>
-                Remove
-              </Button>
-            )}
-          </div>
-        ))}
-        <div className="flex space-x-2">
-          <TextInput
-            placeholder="New option content"
-            value={newOptionContent}
-            onChange={(e) => setNewOptionContent(e.target.value)}
-          />
-          <input
-            type="color"
-            value={newOptionColor}
-            onChange={(e) => setNewOptionColor(e.target.value)}
-            className="h-10 w-10"
-          />
-          <Button
-            type="button"
-            onClick={addOption}
-            disabled={isLoading || !newOptionContent.trim()}
-          >
-            Add Option
-          </Button>
+        <div className="space-y-2">
+          {[0, 1, 2, 3].map((index) => {
+            const option = trackerData.options[index] || {
+              content: "",
+              color: "#000000",
+            };
+            return (
+              <div key={index} className="flex space-x-2 items-center w-max">
+                <TextInput
+                  placeholder={`Option ${index + 1}`}
+                  value={option.content || ""}
+                  onChange={(e) => {
+                    const newOptions = [...trackerData.options];
+                    // Ensure we have enough slots in the array
+                    while (newOptions.length <= index) {
+                      newOptions.push({ content: "", color: "#000000" });
+                    }
+
+                    const newContent = e.target.value;
+                    newOptions[index] = {
+                      ...newOptions[index],
+                      content: newContent,
+                    };
+
+                    // Handle editedOptions
+                    let editedOptions = [...trackerData.editedOptions];
+
+                    if (newOptions[index]._id) {
+                      // If content is cleared, remove from editedOptions
+                      if (!newContent.trim()) {
+                        editedOptions = editedOptions.filter(
+                          (opt) => opt._id !== newOptions[index]._id
+                        );
+                      } else {
+                        // Otherwise update or add to editedOptions
+                        const existingIndex = editedOptions.findIndex(
+                          (opt) => opt._id === newOptions[index]._id
+                        );
+                        if (existingIndex >= 0) {
+                          editedOptions[existingIndex] = newOptions[index];
+                        } else {
+                          editedOptions.push(newOptions[index]);
+                        }
+                      }
+                    } else if (newContent.trim()) {
+                      // For new options, only add to editedOptions if they have content
+                      const existingIndex = editedOptions.findIndex(
+                        (opt) =>
+                          opt === newOptions[index] ||
+                          (opt.tempId &&
+                            opt.tempId === newOptions[index].tempId)
+                      );
+
+                      if (existingIndex >= 0) {
+                        editedOptions[existingIndex] = newOptions[index];
+                      } else {
+                        // Add a temporary ID to track this option in editedOptions
+                        newOptions[index].tempId = Date.now() + index;
+                        editedOptions.push(newOptions[index]);
+                      }
+                    }
+
+                    setTrackerData((prev) => ({
+                      ...prev,
+                      options: newOptions,
+                      editedOptions,
+                    }));
+                  }}
+                  className="w-full"
+                />
+                <input
+                  type="color"
+                  value={option.color || "#000000"}
+                  onChange={(e) => {
+                    const newOptions = [...trackerData.options];
+                    // Ensure we have enough slots in the array
+                    while (newOptions.length <= index) {
+                      newOptions.push({ content: "", color: "#000000" });
+                    }
+                    newOptions[index] = {
+                      ...newOptions[index],
+                      color: e.target.value,
+                    };
+
+                    // Handle editedOptions
+                    const editedOptions = [...trackerData.editedOptions];
+
+                    if (newOptions[index]._id) {
+                      const existingIndex = editedOptions.findIndex(
+                        (opt) => opt._id === newOptions[index]._id
+                      );
+                      if (existingIndex >= 0) {
+                        editedOptions[existingIndex] = newOptions[index];
+                      } else {
+                        editedOptions.push(newOptions[index]);
+                      }
+                    } else if (newOptions[index].content?.trim()) {
+                      // For new options, only add to editedOptions if they have content
+                      const existingIndex = editedOptions.findIndex(
+                        (opt) =>
+                          opt === newOptions[index] ||
+                          (opt.tempId &&
+                            opt.tempId === newOptions[index].tempId)
+                      );
+
+                      if (existingIndex >= 0) {
+                        editedOptions[existingIndex] = newOptions[index];
+                      } else {
+                        // Add a temporary ID to track this option in editedOptions
+                        newOptions[index].tempId = Date.now() + index;
+                        editedOptions.push(newOptions[index]);
+                      }
+                    }
+
+                    setTrackerData((prev) => ({
+                      ...prev,
+                      options: newOptions,
+                      editedOptions,
+                    }));
+                  }}
+                  className="h-10 w-10"
+                />
+                <div className="w-5">
+                  {trackerData.options[index]?.content && (
+                    <button
+                      type="button"
+                      className=" text-gray-500 hover:text-red-500 transition-colors"
+                      onClick={() => {
+                        const optionToRemove = trackerData.options[index];
+
+                        // Update deletedOptions and editedOptions
+                        const newDeletedOptions = [
+                          ...trackerData.deletedOptions,
+                        ];
+                        let newEditedOptions = [...trackerData.editedOptions];
+
+                        if (optionToRemove && optionToRemove._id) {
+                          // If it's an existing option with an ID, add to deletedOptions
+                          newDeletedOptions.push(optionToRemove);
+
+                          // Remove from editedOptions if present
+                          newEditedOptions = newEditedOptions.filter(
+                            (opt) => opt._id !== optionToRemove._id
+                          );
+                        } else {
+                          // For new options, just remove from editedOptions
+                          newEditedOptions = newEditedOptions.filter(
+                            (opt) =>
+                              opt !== optionToRemove &&
+                              (!opt.tempId ||
+                                opt.tempId !== optionToRemove.tempId)
+                          );
+                        }
+
+                        // Remove the option from the options array
+                        const newOptions = [...trackerData.options];
+                        newOptions.splice(index, 1);
+
+                        // Ensure we maintain at least empty placeholders for the UI
+                        while (newOptions.length < 4) {
+                          newOptions.push({ content: "", color: "#000000" });
+                        }
+
+                        setTrackerData((prev) => ({
+                          ...prev,
+                          options: newOptions,
+                          deletedOptions: newDeletedOptions,
+                          editedOptions: newEditedOptions,
+                        }));
+                      }}
+                    >
+                      <IoClose className="h-6 w-6" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="flex gap-4 items-center">

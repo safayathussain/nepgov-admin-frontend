@@ -441,7 +441,7 @@ const SurveyForm = () => {
           url: apiUrl,
           data: formData,
           isToast: true,
-          callback: () => router.push("/surveys"),
+          // callback: () => router.push("/surveys"),
         });
       } catch (error) {
         console.error("Failed to submit survey:", error);
@@ -578,7 +578,7 @@ const SurveyForm = () => {
               <div className="space-y-4">
                 <h3 className="text-sm font-medium">Options</h3>
                 {question.options.map((option, oIndex) => (
-                  <div key={oIndex} className="flex gap-2">
+                  <div key={oIndex} className="flex gap-2 w-max">
                     <TextInput
                       placeholder="Option text"
                       value={option.content}

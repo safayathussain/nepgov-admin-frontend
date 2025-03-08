@@ -61,7 +61,7 @@ const Page = () => {
         showLiveStatus={true}
         data={data}
         columns={columns}
-        searchableColumns={["topic", "user", "categories"]}
+        searchableColumns={["topic","categories"]}
         loading={loading}
       />
     </div>

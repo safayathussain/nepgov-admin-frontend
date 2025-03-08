@@ -12,7 +12,7 @@ export const FetchApi = async ({
   isToast = "",
 }) => {
   const accessToken = sessionStorage.getItem("accessToken")
-  console.log("test", !isTokenExpired(accessToken))
+  console.log("test", !isTokenExpired(accessToken), accessToken)
   let instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_API,
     headers: {

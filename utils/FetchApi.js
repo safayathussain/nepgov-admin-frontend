@@ -16,7 +16,7 @@ export const FetchApi = async ({
     headers: {
       Authorization: `Bearer ${
         (
-          // !isTokenExpired(sessionStorage.getItem("accessToken")) &&
+          !isTokenExpired(sessionStorage.getItem("accessToken")) &&
           sessionStorage.getItem("accessToken")) ||
         ""
       }`,

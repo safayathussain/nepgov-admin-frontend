@@ -15,12 +15,16 @@ export function middleware(request) {
       path: "/",
       maxAge: 3600, // 1 hour
     }
-  );
-  const isAuthenticated = request.cookies.get("auth-token") !== undefined;
+  ); 
+  const response = NextResponse.json({ message: "Cookie set successfully!" });
 
-  if (!isAuthenticated && request.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+  // Set cookie
+  response.headers.set(
+    "Set-Cookie",
+    `adminAccessToken=${request.cookies.get("adminAccessToken")}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=3600`
+  );
+
+
   // Continue with the request
   return NextResponse.next();
 }

@@ -58,11 +58,11 @@ export const formatDateTimeLocal = (date) => {
   return parsedDate.toISOString().slice(0, 16); // Format for input[type="datetime-local"]
 };
 
-export const isTokenExpired = (accessToken) => {
+export const isTokenExpired = async(accessToken) => {
   if (!accessToken) return true;
 
   try {
-    const decoded = jwtDecode(accessToken);
+    const decoded = await jwtDecode(accessToken);
     return !decoded.exp || decoded.exp * 1000 < Date.now();
   } catch (error) {
     return true; // If decoding fails, assume the token is invalid/expired

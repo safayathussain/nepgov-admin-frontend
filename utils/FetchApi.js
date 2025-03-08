@@ -16,8 +16,8 @@ export const FetchApi = async ({
     headers: {
       Authorization: `Bearer ${
         (
-          !isTokenExpired(sessionStorage.getItem("accessToken")) &&
-          sessionStorage.getItem("accessToken")) ||
+           await !isTokenExpired(sessionStorage.getItem("accessToken")) &&
+           sessionStorage.getItem("accessToken")) ||
         ""
       }`,
       "x-user-consent": "accepted",

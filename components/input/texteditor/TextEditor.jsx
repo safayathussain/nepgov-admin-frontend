@@ -24,9 +24,6 @@ const TextEditor = ({
         insertImageAsBase64URI: false,
         url: `${process.env.NEXT_PUBLIC_BASE_API}/file/upload-files`,
         method: "POST",
-        // headers: {
-        //   Authorization: `Bearer ${auth?.accessToken}`,
-        // },
         paramName: "files",
         format: "jpg,png,jpeg",
         accept: "image/jpeg,image/png,image/jpg",

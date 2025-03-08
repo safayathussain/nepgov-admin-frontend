@@ -17,13 +17,7 @@ const Layout = ({ children }) => {
         logout()
       }
       return router.push("/");
-    }
-    // if (auth?.accessToken) {
-    //   const decoded = jwtDecode(auth.accessToken);
-    //   if (!decoded?.exp || decoded?.exp * 1000 < Date.now()) {
-    //     logout();
-    //   }
-    // }
+    } 
   }, []);
 
   return (

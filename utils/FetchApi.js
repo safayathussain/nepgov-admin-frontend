@@ -2,7 +2,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 import { store } from "@/redux/store";
-import { logout } from "./functions";
+import { isTokenExpired, logout } from "./functions";
 
 export const FetchApi = async ({
   method = "get",
@@ -14,8 +14,12 @@ export const FetchApi = async ({
   let instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_API,
     headers: {
-      Authorization: `Bearer ${store.getState().auth?.user?.accessToken || ""}`,
-      "x-user-consent":   "accepted",
+      Authorization: `Bearer ${
+        (!isTokenExpired(store.getState().auth?.user?.accessToken) &&
+          store.getState().auth?.user?.accessToken) ||
+        ""
+      }`,
+      "x-user-consent": "accepted",
     },
     withCredentials: true,
   });

@@ -57,3 +57,14 @@ export const formatDateTimeLocal = (date) => {
   if (isNaN(parsedDate.getTime())) return ""; // Handle invalid dates
   return parsedDate.toISOString().slice(0, 16); // Format for input[type="datetime-local"]
 };
+
+export const isTokenExpired = (accessToken) => {
+  if (!accessToken) return true;
+
+  try {
+    const decoded = jwtDecode(accessToken);
+    return !decoded.exp || decoded.exp * 1000 < Date.now();
+  } catch (error) {
+    return true; // If decoding fails, assume the token is invalid/expired
+  }
+};

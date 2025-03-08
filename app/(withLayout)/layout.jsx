@@ -18,12 +18,12 @@ const Layout = ({ children }) => {
       }
       return router.push("/");
     }
-    if (auth?.accessToken) {
-      const decoded = jwtDecode(auth.accessToken);
-      if (!decoded?.exp || decoded?.exp * 1000 < Date.now()) {
-        logout();
-      }
-    }
+    // if (auth?.accessToken) {
+    //   const decoded = jwtDecode(auth.accessToken);
+    //   if (!decoded?.exp || decoded?.exp * 1000 < Date.now()) {
+    //     logout();
+    //   }
+    // }
   }, []);
 
   return (

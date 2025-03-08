@@ -46,7 +46,7 @@ export const FetchApi = async ({
     return res;
   } catch (error) {
     if (error?.response?.status === 401) {
-      return logout();
+      // return logout();
     }
     console.error("Request failed:", error);
     toast.error(

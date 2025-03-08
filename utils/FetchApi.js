@@ -21,7 +21,7 @@ export const FetchApi = async ({
            accessToken) ||
         ""
       }`,
-      "x-user-consent": "accepted1",
+      "x-user-consent": "accepted",
     },
     withCredentials: true,
   });

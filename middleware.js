@@ -4,7 +4,6 @@ import { cookies } from 'next/headers';
 export function middleware(request) {
   // Log the request path
   console.log('Request path:', request.cookies.get("adminAccessToken"));
-localStorage.setItem('test', request.cookies.get("adminAccessToken").value)
   // Example: Redirect unauthenticated users
   const isAuthenticated = request.cookies.get('auth-token') !== undefined;
 

@@ -14,11 +14,11 @@ export const FetchApi = async ({
   let instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_API,
     headers: {
-      Authorization: `Bearer ${
-        (!isTokenExpired(store.getState().auth?.user?.accessToken) &&
-          store.getState().auth?.user?.accessToken) ||
-        ""
-      }`,
+      // Authorization: `Bearer ${
+      //   (!isTokenExpired(store.getState().auth?.user?.accessToken) &&
+      //     store.getState().auth?.user?.accessToken) ||
+      //   ""
+      // }`,
       "x-user-consent": "accepted",
     },
     withCredentials: true,

@@ -15,7 +15,8 @@ export const FetchApi = async ({
     baseURL: process.env.NEXT_PUBLIC_BASE_API,
     headers: {
       Authorization: `Bearer ${
-        (!isTokenExpired(sessionStorage.getItem("accessToken")) &&
+        (
+          // !isTokenExpired(sessionStorage.getItem("accessToken")) &&
           sessionStorage.getItem("accessToken")) ||
         ""
       }`,

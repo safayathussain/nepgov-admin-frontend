@@ -1,6 +1,7 @@
 "use client";
 import SideBar from "@/components/common/SideBar";
 import { logout, useAuth } from "@/utils/functions";
+import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { IoArrowBackOutline } from "react-icons/io5";
@@ -16,6 +17,12 @@ const Layout = ({ children }) => {
         logout()
       }
       return router.push("/");
+    }
+    if (auth?.accessToken) {
+      const decoded = jwtDecode(auth.accessToken);
+      if (!decoded?.exp || decoded?.exp * 1000 < Date.now()) {
+        logout();
+      }
     }
   }, []);
 

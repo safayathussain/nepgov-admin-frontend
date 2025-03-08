@@ -2,6 +2,7 @@ import { store } from "@/redux/store";
 import { FetchApi } from "./FetchApi";
 import { setAuth } from "@/redux/slices/AuthSlice";
 import { useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
 
 export const useAuth = () => {
   const auth = useSelector((state) => state.auth?.user);
@@ -58,11 +59,11 @@ export const formatDateTimeLocal = (date) => {
   return parsedDate.toISOString().slice(0, 16); // Format for input[type="datetime-local"]
 };
 
-export const isTokenExpired = async(accessToken) => {
+export const isTokenExpired = (accessToken) => {
   if (!accessToken) return true;
 
   try {
-    const decoded = await jwtDecode(accessToken);
+    const decoded =  jwtDecode(accessToken);
     return !decoded.exp || decoded.exp * 1000 < Date.now();
   } catch (error) {
     return true; // If decoding fails, assume the token is invalid/expired

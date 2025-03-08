@@ -12,7 +12,6 @@ export const FetchApi = async ({
   isToast = "",
 }) => {
   const accessToken = sessionStorage.getItem("accessToken")
-  console.log("test", !isTokenExpired(accessToken), accessToken)
   let instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_API,
     headers: {
@@ -22,7 +21,7 @@ export const FetchApi = async ({
            accessToken) ||
         ""
       }`,
-      "x-user-consent": "accepted",
+      "x-user-consent": "accepted1",
     },
     withCredentials: true,
   });
@@ -49,7 +48,7 @@ export const FetchApi = async ({
     return res;
   } catch (error) {
     if (error?.response?.status === 401) {
-      // return logout();
+      return logout();
     }
     console.error("Request failed:", error);
     toast.error(

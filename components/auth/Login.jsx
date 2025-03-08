@@ -10,19 +10,20 @@ import { setAuth } from "@/redux/slices/AuthSlice";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter()
-const dispatch = useDispatch()
+  const router = useRouter();
+  const dispatch = useDispatch();
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     const { data } = await FetchApi({
       method: "post",
       url: "/auth/admin-signin",
-      data: {email, password},
+      data: { email, password },
       isToast: true,
-      callback: () => router.push("/crimes")
+      callback: () => router.push("/crimes"),
     });
+    sessionStorage.setItem("accessToken", data?.data?.user?.accessToken);
+    delete data?.data?.user?.accessToken;
     dispatch(setAuth(data?.data?.user));
-    
   };
 
   return (

@@ -5,66 +5,86 @@ import Image from "next/image";
 import Table from "@/components/common/Table";
 import Button from "@/components/input/Button";
 import Modal from "@/components/modal/Modal";
-import { formatDate } from "@/utils/functions";
+import { formatDate, isLive, timeAgo, timeLeft } from "@/utils/functions";
 import React, { useState } from "react";
 import EmptySurveyTracker from "./EmptySurveyTracker";
 import SimpleChart from "@/components/chart/SimpleChart";
 import SurveyStatus from "@/components/common/SurveyStatus";
 import TrackerStatus from "@/components/common/TrackerStatus";
 import OptionsWithColor from "@/components/common/OptionsWithColor";
+import ArticleStatus from "@/components/common/ArticleStatus";
 
 const FeaturedSurveyTracker = ({
   trackers,
+  articles,
   surveys,
   selectedSurvey,
   selectedTrackers,
+  selectedArticle,
   onSelectSurvey,
   onSelectTrackers,
+  onSelectArticle,
 }) => {
   const [showSurveyModal, setShowSurveyModal] = useState(false);
   const [showTrackerModal, setShowTrackerModal] = useState(false);
+  const [showArticleModal, setShowArticleModal] = useState(false);
 
   return (
     <div>
-      <p className="text-xl font-medium">Featured Survey And Tracker</p>
-      <div className="max-w-[1440px] mt-2">
-        <div className="flex flex-col lg:flex-row gap-5">
-          <div className="lg:w-2/3 h-full">
+      <p className="text-xl font-medium">
+        Featured Survey, Tracker, and Article
+      </p>
+      <div className="max-w-[1300px]">
+        <div className="py-10">
+          <div className="grid grid-cols-6 gap-5">
+            {/* Selected Survey */}
             {selectedSurvey ? (
-              <div className="border">
-                <div >
-                  <Image
-                    src="https://i.ibb.co/0rm95Dk/7dfd2d98ea5bcaefbb081aabbbb76ade.jpg"
-                    width={874}
-                    height={364}
-                    alt=""
-                    className="w-full"
-                  />
-                  <div className="p-5 space-y-2">
-                    <SurveyStatus />
-                    <p className="text-2xl md:text-3xl font-semibold">
-                      {selectedSurvey.topic}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      {formatDate(selectedSurvey.createdAt)}
-                    </p>
-                  </div>
+              <Link
+                href={`/surveys/${selectedSurvey?._id}`}
+                className="shadow-light border col-span-6 flex flex-col md:flex-row items-center border-[#EBEBEB]"
+              >
+                <Image
+                  src={
+                    process.env.NEXT_PUBLIC_BASE_IMAGE_API +
+                    selectedSurvey?.thumbnail
+                  }
+                  width={874}
+                  height={364}
+                  alt=""
+                  className="w-full md:w-1/2 h-full aspect-video object-cover"
+                />
+                <div className="p-5 md:p-8 lg:p-12 space-y-3">
+                  <SurveyStatus />
+                  <p className="text-2xl md:text-4xl xl:text-5xl font-semibold">
+                    {selectedSurvey.topic}
+                  </p>
+                  <p className="text-sm text-lightGray">
+                    {isLive(
+                      selectedSurvey?.liveStartedAt,
+                      selectedSurvey?.liveEndedAt
+                    )
+                      ? timeLeft(selectedSurvey?.liveEndedAt)
+                      : timeAgo(selectedSurvey?.liveEndedAt)}
+                  </p>
                 </div>
-              </div>
+              </Link>
             ) : (
-              <EmptySurveyTracker
-                onClick={() => setShowSurveyModal(true)}
-                type="SURVEY"
-                className="shadow-light border border-[#EBEBEB]"
-              />
+              <div className="col-span-6">
+                <EmptySurveyTracker
+                  onClick={() => setShowSurveyModal(true)}
+                  type="SURVEY"
+                  className="shadow-light border border-[#EBEBEB] w-full h-full"
+                />
+              </div>
             )}
-          </div>
-          <div className="flex flex-col gap-5 lg:w-1/3">
+
+            {/* Tracker Items */}
             {selectedTrackers.length > 0
               ? selectedTrackers.map((tracker) => (
-                  <div
-                  key={tracker._id}
-                    className="p-4 shadow-light border border-[#EBEBEB] flex flex-col justify-between gap-5"
+                  <Link
+                    key={tracker._id}
+                    href={`/trackers/${tracker._id}`}
+                    className="p-5 shadow-light border border-[#EBEBEB] flex flex-col justify-between gap-5 col-span-6 md:col-span-3 lg:col-span-2"
                   >
                     <div>
                       <div className="flex justify-between">
@@ -73,30 +93,89 @@ const FeaturedSurveyTracker = ({
                           {tracker.categories[0]?.name}
                         </p>
                       </div>
-                      <p className="text-xl font-semibold mb-2">{tracker.topic}</p>
-                      <OptionsWithColor options={tracker.options}/>
+                      <p className="text-xl font-semibold my-2">
+                        {tracker.topic}
+                      </p>
+                      <OptionsWithColor options={tracker.options} />
                     </div>
-                    <div>
+                    <div className="-mt-5">
                       <SimpleChart height={190} />
                     </div>
-                  </div>
+                    <p className="text-sm text-lightGray">
+                      {isLive(tracker?.liveStartedAt, tracker?.liveEndedAt)
+                        ? timeLeft(tracker?.liveEndedAt)
+                        : timeAgo(tracker?.liveEndedAt)}
+                    </p>
+                  </Link>
                 ))
               : Array(2)
                   .fill(null)
                   .map((_, index) => (
-                    <EmptySurveyTracker
-                      onClick={() => setShowTrackerModal(true)}
+                    <div
                       key={index}
-                      type="TRACKER"
-                      className="shadow-light border border-[#EBEBEB]"
-                    />
+                      className="p-5 shadow-light border border-[#EBEBEB] flex flex-col justify-between gap-5 col-span-6 md:col-span-3 lg:col-span-2"
+                    >
+                      <EmptySurveyTracker
+                        onClick={() => setShowTrackerModal(true)}
+                        type="TRACKER"
+                        className="w-full h-full"
+                      />
+                    </div>
                   ))}
+
+            {/* Selected Article */}
+            {selectedArticle ? (
+              <Link
+                href={`/articles/${selectedArticle?._id}`}
+                className="p-5 shadow-light border border-[#EBEBEB] flex flex-col  gap-5 col-span-6 md:col-span-3 lg:col-span-2"
+              >
+                <Image
+                  src={
+                    process.env.NEXT_PUBLIC_BASE_IMAGE_API +
+                    selectedArticle?.thumbnail
+                  }
+                  width={300}
+                  height={150}
+                  alt=""
+                  className="w-full object-cover coverImage"
+                />
+                <div>
+                  <div className="flex justify-between">
+                    <ArticleStatus/>
+                    <p className="text-lightGray">
+                      {selectedArticle.categories?.[0]?.name || "Uncategorized"}
+                    </p>
+                  </div>
+                  <p className="text-xl font-semibold mt-3">
+                    {selectedArticle.title}
+                  </p>
+                </div>
+                <p className="text-sm text-lightGray mt-auto">
+                  {selectedArticle.createdAt
+                    ? timeAgo(selectedArticle.createdAt)
+                    : "Published recently"}
+                </p>
+              </Link>
+            ) : (
+              <div className="p-5 shadow-light border border-[#EBEBEB] flex flex-col justify-between gap-5 col-span-6 md:col-span-3 lg:col-span-2">
+                <EmptySurveyTracker
+                  onClick={() => setShowArticleModal(true)}
+                  type="ARTICLE"
+                  className="w-full h-full"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-5 flex gap-4">
-          <Button onClick={() => setShowSurveyModal(true)}>Select Survey</Button>
+          <Button onClick={() => setShowSurveyModal(true)}>
+            Select Survey
+          </Button>
           <Button onClick={() => setShowTrackerModal(true)}>
             Select Trackers
+          </Button>
+          <Button onClick={() => setShowArticleModal(true)}>
+            Select Article
           </Button>
         </div>
       </div>
@@ -107,12 +186,17 @@ const FeaturedSurveyTracker = ({
           <p className="text-xl font-medium">Select Survey</p>
           <Table
             tableClassName="lg:w-full mt-4"
-            columns={[{ key: "topic", label: "Survey Topic" }, { key: "action", label: "Action" }]}
+            columns={[
+              { key: "topic", label: "Survey Topic" },
+              { key: "action", label: "Action" },
+            ]}
             data={surveys.map((survey) => ({
               ...survey,
               action: (
                 <Button
-                  variant={selectedSurvey?._id !== survey._id ? "primary" : "secondary"}
+                  variant={
+                    selectedSurvey?._id !== survey._id ? "primary" : "secondary"
+                  }
                   onClick={() => onSelectSurvey(survey)}
                 >
                   {selectedSurvey?._id === survey._id ? "Remove" : "Select"}
@@ -128,22 +212,63 @@ const FeaturedSurveyTracker = ({
       {/* Tracker Modal */}
       {showTrackerModal && (
         <Modal setOpen={setShowTrackerModal} className="max-w-[800px] w-full">
-          <p className="text-xl font-medium">Select Trackers (Max 2)</p>
+          <p className="text-xl font-medium">Select Trackers (Max 3)</p>
           <Table
             tableClassName="lg:w-full mt-4"
-            columns={[{ key: "topic", label: "Tracker Topic" }, { key: "action", label: "Action" }]}
+            columns={[
+              { key: "topic", label: "Tracker Topic" },
+              { key: "action", label: "Action" },
+            ]}
             data={trackers.map((tracker) => ({
               ...tracker,
               action: (
                 <Button
+                  variant={
+                    !selectedTrackers.some((t) => t._id === tracker._id)
+                      ? "primary"
+                      : "secondary"
+                  }
                   onClick={() => onSelectTrackers(tracker)}
                 >
-                  {selectedTrackers.some((t) => t._id === tracker._id) ? "Remove" : "Select"}
+                  {selectedTrackers.some((t) => t._id === tracker._id)
+                    ? "Remove"
+                    : "Select"}
                 </Button>
               ),
             }))}
             showAddButton={false}
             searchableColumns={["topic"]}
+          />
+        </Modal>
+      )}
+
+      {/* Article Modal */}
+      {showArticleModal && (
+        <Modal setOpen={setShowArticleModal} className="max-w-[800px] w-full">
+          <p className="text-xl font-medium">Select Article</p>
+          <Table
+            tableClassName="lg:w-full mt-4"
+            columns={[
+              { key: "title", label: "Article Title" },
+              { key: "action", label: "Action" },
+            ]}
+            data={articles.map((article) => ({
+              ...article,
+              action: (
+                <Button
+                  variant={
+                    selectedArticle?._id !== article._id
+                      ? "primary"
+                      : "secondary"
+                  }
+                  onClick={() => onSelectArticle(article)}
+                >
+                  {selectedArticle?._id === article._id ? "Remove" : "Select"}
+                </Button>
+              ),
+            }))}
+            showAddButton={false}
+            searchableColumns={["title"]}
           />
         </Modal>
       )}

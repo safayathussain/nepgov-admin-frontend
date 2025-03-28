@@ -7,3 +7,7 @@
 .css-1dune0f-MuiInputBase-input-MuiOutlinedInput-input{
     padding: 10.5px !important;
 }
+.coverImage {
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}

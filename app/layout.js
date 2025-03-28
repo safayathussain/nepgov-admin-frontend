@@ -6,8 +6,9 @@ import Providers from "@/components/common/Providers";
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
+
 
 export const metadata = {
   title: "NepGov Admin",

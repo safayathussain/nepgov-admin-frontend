@@ -39,7 +39,7 @@ const Layout = ({ children }) => {
                 {pathSegments[0]?.replace("-", " ")}
               </p>
             </div>
-            <div className="mt-10">{children}</div>
+            <div className="mt-10 max-w-[1280px]">{children}</div>
           </div>
         </>
       )}

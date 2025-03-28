@@ -1,5 +1,6 @@
 import SurveyStatus from "@/components/common/SurveyStatus";
 import TrackerStatus from "@/components/common/TrackerStatus";
+import ArticleStatus from "@/components/common/ArticleStatus"; // Import ArticleStatus
 import React from "react";
 
 const EmptySurveyTracker = ({
@@ -10,16 +11,22 @@ const EmptySurveyTracker = ({
 }) => {
   return (
     <div
-      className={`relative cursor-pointer rounded-lg border border-dashed border-gray-300 bg-white hover:border-gray-400  `}
+      className={`relative cursor-pointer rounded-lg border border-dashed border-gray-300 bg-white hover:border-gray-400`}
       onClick={onClick}
       style={{
-        height: height+'px'
+        height: height + "px",
       }}
     >
       {showStatus && (
         <div className="absolute top-4 left-4">
           <span>
-            {type === "SURVEY" ? <SurveyStatus /> : <TrackerStatus />}
+            {type === "SURVEY" ? (
+              <SurveyStatus />
+            ) : type === "TRACKER" ? (
+              <TrackerStatus />
+            ) : (
+              <ArticleStatus /> // Use ArticleStatus for ARTICLE type
+            )}
           </span>
         </div>
       )}
@@ -27,7 +34,7 @@ const EmptySurveyTracker = ({
       <div
         className={`flex items-center justify-center h-full`}
         style={{
-          height: height+'px'
+          height: height + "px",
         }}
       >
         <div className="rounded-full p-3 bg-gray-100 group-hover:bg-gray-200 transition-colors">

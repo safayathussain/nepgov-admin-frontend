@@ -120,7 +120,7 @@ const Table = ({
       ) : (
         <>
           {/* Table */}
-          <div className={`w-[90vw] lg:w-[calc(100vw-340px)] overflow-x-auto ${tableClassName}`}>
+          <div className={`max-w-[1280px] overflow-x-auto ${tableClassName}`}>
             <table className="w-full border-collapse overflow-x-scroll">
               <thead>
                 <tr>

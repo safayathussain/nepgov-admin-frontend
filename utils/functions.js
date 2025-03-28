@@ -69,3 +69,45 @@ export const isTokenExpired = (accessToken) => {
     return true; // If decoding fails, assume the token is invalid/expired
   }
 };
+export function timeAgo(postTime) {
+  const now = new Date();
+  const timestamp = new Date(postTime);
+  const diff = now - timestamp; // Difference in milliseconds
+
+  // Calculate time differences
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30); // Approximation
+  const years = Math.floor(days / 365); // Approximation
+
+  // Return the closest meaningful time unit
+  if (seconds < 60) return `1 minute ago`; // Always show 1 minute for less than a minute
+  if (minutes < 60) return `${minutes} minutes ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  if (days < 30) return `${days} days ago`;
+  if (months < 12) return `${months} months ago`;
+  return `${years} years ago`;
+}
+export function timeLeft(futureTime) {
+  const now = new Date();
+  const timestamp = new Date(futureTime);
+  const diff = timestamp - now; // Difference in milliseconds
+
+  if (diff <= 0) return "Expired"; // If time has passed
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30); // Approximation
+  const years = Math.floor(days / 365); // Approximation
+
+  if (seconds < 60) return `Less than a minute left`;
+  if (minutes < 60) return `${minutes} minutes left`;
+  if (hours < 24) return `${hours} hours left`;
+  if (days < 30) return `${days} days left`;
+  if (months < 12) return `${months} months left`;
+  return `${months === 12 ? 1 : years} years left`;
+}

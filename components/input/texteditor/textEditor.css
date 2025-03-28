@@ -1,22 +1,32 @@
 .jodit-editor h1 {
   font-size: 2rem; /* Size of the h1 text */
-  font-weight: bold; /* Bold for h1 */
+  font-weight: 600; /* Bold for h1 */
   color: #333; /* Text color */
   margin-bottom: 1rem;
+  color: #3560ad;
 }
 
 .jodit-editor h2 {
   font-size: 1.75rem; /* Size of h2 text */
-  font-weight: semi-bold;
+  font-weight: 500;
   color: #333;
   margin-bottom: 1rem;
+  color: #3560ad;
 }
 
 .jodit-editor h3 {
   font-size: 1.5rem; /* Size of h3 text */
-  font-weight: medium;
+  font-weight: 500;
   color: #333;
   margin-bottom: 1rem;
+  color: #3560ad;
+}
+.jodit-editor h4 {
+  font-size: 1.25rem; /* Size of h4 text */
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 1rem;
+  color: #3560ad;
 }
 
 .jodit-editor p {
@@ -126,7 +136,7 @@
 
 .jodit-container {
   border-radius: 10px !important;
-  border-color: #D1D5DB !important;
+  border-color: #d1d5db !important;
 }
 .jodit-react-container {
   border-radius: 10px !important;
@@ -138,9 +148,8 @@
 .jodit-workplace {
   border-bottom-left-radius: 10px !important;
   border-bottom-right-radius: 10px !important;
- 
 }
-.jodit-wysiwyg img{
+.jodit-wysiwyg img {
   max-height: 500px !important;
 }
 .jodit-toolbar-button_pencil {

@@ -6,13 +6,13 @@ import DailyQuestion from "@/components/page/home-page/DailyQuestion";
 import FeaturedSurveyTracker from "@/components/page/home-page/FeaturedSurveyTracker";
 import LiveSurveyTracker from "@/components/page/home-page/LiveSurveyTracker";
 import { FetchApi } from "@/utils/FetchApi";
-import { ProgressSpinner } from "primereact/progressspinner";
 import Loading from "@/components/common/Loading";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [trackers, setTrackers] = useState([]);
   const [surveys, setSurveys] = useState([]);
+  const [articles, setArticles] = useState([]); // Added for articles
 
   // State for DailyQuestion component
   const [selectedTracker, setSelectedTracker] = useState(null);
@@ -20,6 +20,7 @@ const Page = () => {
   // State for FeaturedSurveyTracker component
   const [selectedSurvey, setSelectedSurvey] = useState(null);
   const [selectedTrackers, setSelectedTrackers] = useState([]);
+  const [selectedArticle, setSelectedArticle] = useState(null); // Added for selected article
 
   // State for LiveSurveyTracker component
   const [selectedItems, setSelectedItems] = useState([]);
@@ -39,6 +40,9 @@ const Page = () => {
               setSelectedSurvey(data.featuredSurveyTracker.surveys[0]);
             }
             setSelectedTrackers(data.featuredSurveyTracker.trackers || []);
+            if (data.featuredSurveyTracker.articles?.length > 0) {
+              setSelectedArticle(data.featuredSurveyTracker.articles[0]);  
+            }
           }
           if (data.liveSurveyTracker) {
             const items = data.liveSurveyTracker.map((item) => ({
@@ -49,9 +53,10 @@ const Page = () => {
           }
         }
 
-        const [trackerResponse, surveyResponse] = await Promise.all([
+        const [trackerResponse, surveyResponse, articleResponse] = await Promise.all([
           FetchApi({ url: "/tracker" }),
           FetchApi({ url: "/survey" }),
+          FetchApi({ url: "/article" }), 
         ]);
 
         if (trackerResponse?.data?.success) {
@@ -59,6 +64,9 @@ const Page = () => {
         }
         if (surveyResponse?.data?.success) {
           setSurveys(surveyResponse.data.data);
+        }
+        if (articleResponse?.data?.success) {
+          setArticles(articleResponse.data.data);  
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -77,7 +85,12 @@ const Page = () => {
 
   // Handler for selecting a survey in FeaturedSurveyTracker
   const handleSelectSurvey = (survey) => {
-    setSelectedSurvey(survey);
+    if(selectedSurvey?._id === survey._id){
+      setSelectedSurvey(null)
+    }else{
+
+      setSelectedSurvey(survey);
+    }
   };
 
   // Handler for selecting trackers in FeaturedSurveyTracker
@@ -88,6 +101,15 @@ const Page = () => {
       );
     } else if (selectedTrackers.length < 2) {
       setSelectedTrackers([...selectedTrackers, tracker]);
+    }
+  };
+
+  // Handler for selecting an article in FeaturedSurveyTracker
+  const handleSelectArticle = (article) => {
+    if (selectedArticle?._id === article._id) {
+      setSelectedArticle(null); // Deselect if already selected
+    } else {
+      setSelectedArticle(article); // Select the new article
     }
   };
 
@@ -108,6 +130,7 @@ const Page = () => {
       featuredSurveyTracker: {
         surveys: selectedSurvey ? [selectedSurvey._id] : [],
         trackers: selectedTrackers.map((t) => t._id),
+        articles: [selectedArticle?._id] || [], 
       },
       liveSurveyTracker: selectedItems.map((item) => ({
         data: item._id,
@@ -122,6 +145,7 @@ const Page = () => {
       isToast: true,
     });
   };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -143,10 +167,13 @@ const Page = () => {
       <FeaturedSurveyTracker
         trackers={trackers}
         surveys={surveys}
+        articles={articles}  
         selectedSurvey={selectedSurvey}
         selectedTrackers={selectedTrackers}
+        selectedArticle={selectedArticle}  
         onSelectSurvey={handleSelectSurvey}
         onSelectTrackers={handleSelectTrackers}
+        onSelectArticle={handleSelectArticle}  
       />
       <hr className="my-5" />
       <LiveSurveyTracker

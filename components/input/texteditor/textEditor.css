@@ -149,9 +149,9 @@
   border-bottom-left-radius: 10px !important;
   border-bottom-right-radius: 10px !important;
 }
-.jodit-wysiwyg img {
+/* .jodit-wysiwyg img {
   max-height: 500px !important;
-}
+} */
 .jodit-toolbar-button_pencil {
   display: none !important;
 }

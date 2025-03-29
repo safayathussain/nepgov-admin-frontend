@@ -49,7 +49,7 @@ const TextEditor = ({
         },
         defaultHandlerSuccess: function (data) {
           data.files?.forEach((imageUrl) => {
-            const imageTag = `<img src="${imageUrl}" crossOrigin="anonymous" style="max-height: 500px"/>`;
+            const imageTag = `<img src="${imageUrl}" crossOrigin="anonymous" style="max-height: 1000px"/>`;
             this.s?.insertHTML(imageTag);
           });
         },

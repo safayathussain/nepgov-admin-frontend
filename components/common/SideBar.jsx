@@ -14,7 +14,7 @@ import {
   RiPagesLine,
   RiSurveyLine,
 } from "react-icons/ri";
-import { MdOutlineWhereToVote } from "react-icons/md";
+import { MdOutlineMail, MdOutlineWhereToVote } from "react-icons/md";
 import { BiCategory } from "react-icons/bi";
 import { TbArticle } from "react-icons/tb";
 import { IoClose, IoSettingsOutline } from "react-icons/io5";
@@ -30,6 +30,7 @@ const menuItems = [
   { icon: TbArticle, label: "Static Pages", href: "/static-pages" },
   { icon: RiPagesLine, label: "Home Page", href: "/home-page" },
   { icon: PiUsersLight, label: "Users", href: "/users" },
+  { icon: MdOutlineMail, label: "Email", href: "/email" },
 ];
 
 const SideBar = () => {

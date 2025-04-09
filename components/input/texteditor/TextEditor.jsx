@@ -12,6 +12,7 @@ const TextEditor = ({
   editor,
   label,
   setContent = () => {},
+  extraButtons = [],
 }) => {
   const { auth } = useAuth();
   const [localEditor, setLocalEditor] = useState(null);
@@ -60,6 +61,7 @@ const TextEditor = ({
       showXPathInStatusbar: false,
       buttons:
         "bold,italic,underline,strikethrough,ul,fontsize,paragraph,image,hr,table,link,indent,outdent,left,brush,undo,redo",
+        extraButtons: extraButtons
     }),
     [ ]
   );
@@ -78,7 +80,7 @@ const TextEditor = ({
 
   return (
     <div>
-      <p className="block text-[#4B5563] text-sm mb-0.5">{label}</p>
+      <p className="block text-black text-[15px] mb-0.5">{label}</p>
       <JoditEditor
         className={`jodit-editor ${className}`}
         ref={editor}

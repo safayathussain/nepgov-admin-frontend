@@ -12,6 +12,8 @@ const LogTab = () => {
   const columns = [
     { key: "template", label: "Template", render: (row) => row.template || "N/A" },
     { key: "recipient", label: "Recipient", render: (row) => row.recipient || "N/A" },
+    { key: "firstName", label: "First Name", render: (row) => row.firstName || "N/A" },
+    { key: "lastName", label: "Last Name", render: (row) => row.lastName || "N/A" },
     { key: "status", label: "Status" },
     { key: "errorMessage", label: "Error", render: (row) => row.errorMessage || "N/A" },
     { key: "createdAt", label: "Sent At" },
@@ -26,9 +28,11 @@ const LogTab = () => {
           const formattedLogs = response.data.data.map((item) => ({
             _id: item.template?._id,
             template: item.template?.name,
-            recipient: item.recipient?.email,
+            recipient: item.recipient,
             status: item.status,
             errorMessage: item.errorMessage,
+            firstName: item.firstName,
+            lastName: item.lastName,
             createdAt: formatDate(item.createdAt),
           }));
           setLogs(formattedLogs);

@@ -90,7 +90,7 @@ const SimpleChart = ({height=200}) => {
           },
           responsive: true,
           maintainAspectRatio: true,
-          aspectRatio: 1.5,
+          // aspectRatio: 1.5,
         },
       });
     }

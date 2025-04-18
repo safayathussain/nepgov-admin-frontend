@@ -38,7 +38,7 @@ const FeaturedSurveyTracker = ({
         <div className="py-10">
           <div className="grid grid-cols-6 gap-5">
             {/* Selected Survey */}
-            {selectedSurvey ? (
+            {/* {selectedSurvey ? (
               <Link
                 href={`/surveys/${selectedSurvey?._id}`}
                 className="shadow-light border col-span-6 flex flex-col md:flex-row items-center border-[#EBEBEB]"
@@ -76,8 +76,54 @@ const FeaturedSurveyTracker = ({
                   className="shadow-light border border-[#EBEBEB] w-full h-full"
                 />
               </div>
-            )}
+            )} */}
 
+            {/* Selected Article */}
+            {selectedArticle ? (
+              <Link
+                href={`/articles/${selectedArticle?._id}`}
+                className="p-5 shadow-light border border-[#EBEBEB] flex flex-col  gap-5 col-span-6 lg:col-span-4 row-span-2"
+              >
+                <img
+                  src={
+                    process.env.NEXT_PUBLIC_BASE_IMAGE_API +
+                    selectedArticle?.thumbnail
+                  }
+                  width={300}
+                  height={150}
+                  alt=""
+                  className="w-full object-cover coverImage"
+                />
+                <div>
+                  <div className="flex justify-between">
+                    <ArticleStatus />
+                    <p className="text-lightGray">
+                      {selectedArticle.categories?.[0]?.name || "Uncategorized"}
+                    </p>
+                  </div>
+                  <p className="text-3xl font-semibold mt-3">
+                    {selectedArticle.title}
+                  </p>
+                </div>
+                <p className=" text-lightGray ">
+                  {selectedArticle.createdAt
+                    ? timeAgo(selectedArticle.createdAt)
+                    : "Published recently"}
+                </p>
+                <div
+                  dangerouslySetInnerHTML={{ __html: selectedArticle.content }}
+                  className="!line-clamp-3 text-lg -mt-2"
+                ></div>
+              </Link>
+            ) : (
+              <div className="p-5 shadow-light border border-[#EBEBEB] flex flex-col justify-between gap-5 col-span-6 lg:col-span-4 row-span-2">
+                <EmptySurveyTracker
+                  onClick={() => setShowArticleModal(true)}
+                  type="ARTICLE"
+                  className="w-full h-full"
+                />
+              </div>
+            )}
             {/* Tracker Items */}
             {selectedTrackers.length > 0
               ? selectedTrackers.map((tracker) => (
@@ -99,7 +145,7 @@ const FeaturedSurveyTracker = ({
                       <OptionsWithColor options={tracker.options} />
                     </div>
                     <div className="-mt-5">
-                      <SimpleChart height={190} />
+                      <SimpleChart />
                     </div>
                     <p className="text-sm text-lightGray">
                       {isLive(tracker?.liveStartedAt, tracker?.liveEndedAt)
@@ -122,66 +168,24 @@ const FeaturedSurveyTracker = ({
                       />
                     </div>
                   ))}
-
-            {/* Selected Article */}
-            {selectedArticle ? (
-              <Link
-                href={`/articles/${selectedArticle?._id}`}
-                className="p-5 shadow-light border border-[#EBEBEB] flex flex-col  gap-5 col-span-6 md:col-span-3 lg:col-span-2"
-              >
-                <Image
-                  src={
-                    process.env.NEXT_PUBLIC_BASE_IMAGE_API +
-                    selectedArticle?.thumbnail
-                  }
-                  width={300}
-                  height={150}
-                  alt=""
-                  className="w-full object-cover coverImage"
-                />
-                <div>
-                  <div className="flex justify-between">
-                    <ArticleStatus/>
-                    <p className="text-lightGray">
-                      {selectedArticle.categories?.[0]?.name || "Uncategorized"}
-                    </p>
-                  </div>
-                  <p className="text-xl font-semibold mt-3">
-                    {selectedArticle.title}
-                  </p>
-                </div>
-                <p className="text-sm text-lightGray mt-auto">
-                  {selectedArticle.createdAt
-                    ? timeAgo(selectedArticle.createdAt)
-                    : "Published recently"}
-                </p>
-              </Link>
-            ) : (
-              <div className="p-5 shadow-light border border-[#EBEBEB] flex flex-col justify-between gap-5 col-span-6 md:col-span-3 lg:col-span-2">
-                <EmptySurveyTracker
-                  onClick={() => setShowArticleModal(true)}
-                  type="ARTICLE"
-                  className="w-full h-full"
-                />
-              </div>
-            )}
           </div>
         </div>
         <div className="mt-5 flex gap-4">
-          <Button onClick={() => setShowSurveyModal(true)}>
+          {/* uncomment if survey added in future */}
+          {/* <Button onClick={() => setShowSurveyModal(true)}>
             Select Survey
+          </Button> */}
+          <Button onClick={() => setShowArticleModal(true)}>
+            Select Article
           </Button>
           <Button onClick={() => setShowTrackerModal(true)}>
             Select Trackers
-          </Button>
-          <Button onClick={() => setShowArticleModal(true)}>
-            Select Article
           </Button>
         </div>
       </div>
 
       {/* Survey Modal */}
-      {showSurveyModal && (
+      {/* {showSurveyModal && (
         <Modal setOpen={setShowSurveyModal} className="max-w-[800px] w-full">
           <p className="text-xl font-medium">Select Survey</p>
           <Table
@@ -207,12 +211,12 @@ const FeaturedSurveyTracker = ({
             searchableColumns={["topic"]}
           />
         </Modal>
-      )}
+      )} */}
 
       {/* Tracker Modal */}
       {showTrackerModal && (
         <Modal setOpen={setShowTrackerModal} className="max-w-[800px] w-full">
-          <p className="text-xl font-medium">Select Trackers (Max 3)</p>
+          <p className="text-xl font-medium">Select Trackers (Max 2)</p>
           <Table
             tableClassName="lg:w-full mt-4"
             columns={[

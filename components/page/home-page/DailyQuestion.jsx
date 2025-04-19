@@ -1,5 +1,6 @@
 "use client";
 
+
 import Table from "@/components/common/Table";
 import Button from "@/components/input/Button";
 import Modal from "@/components/modal/Modal";

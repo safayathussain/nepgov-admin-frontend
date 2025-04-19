@@ -11,17 +11,13 @@ export const FetchApi = async ({
   callback = () => {},
   isToast = "",
 }) => {
-  const accessToken = sessionStorage.getItem("accessToken")
+  const accessToken = sessionStorage.getItem("accessToken");
   let instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_API,
     headers: {
       Authorization: `Bearer ${
-        (
-            !isTokenExpired(accessToken) &&
-           accessToken) ||
-        ""
+        (!isTokenExpired(accessToken) && accessToken) || ""
       }`,
-      "x-user-consent": "accepted",
     },
     withCredentials: true,
   });

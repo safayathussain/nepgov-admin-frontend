@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FetchApi } from "@/utils/FetchApi";
 import TextInput from "@/components/input/TextInput";
+import TextArea from "@/components/input/TextArea";
 
 const UserDetailsPage = () => {
   const [userData, setUserData] = useState({
@@ -19,6 +20,7 @@ const UserDetailsPage = () => {
     isVerified: false,
     profilePicture: null,
     createdAt: "",
+    survey: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const { slug } = useParams();
@@ -132,6 +134,39 @@ const UserDetailsPage = () => {
           value={new Date(userData.createdAt).toLocaleDateString() || ""}
           readOnly
         />
+      </div>
+      <p className="text-2xl font-semibold mt-5">Profile Survey</p>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-3">
+        <TextInput
+          label="Reason For Joining"
+          name="politicalParty"
+          value={userData.survey?.reasonForJoining || ""}
+          readOnly
+        />
+        <TextInput
+          label="Political Party"
+          name="politicalParty"
+          value={userData.survey?.politicalParty || ""}
+          readOnly
+        />
+        <TextInput
+          label="Ethnicity"
+          name="ethnicity"
+          value={userData.survey?.ethnicity || ""}
+          readOnly
+        /> 
+        <TextInput
+          label="Highest Qualification"
+          name="highestQualification"
+          value={userData.survey?.highestQualification || ""}
+          readOnly
+        /> 
+        <TextArea
+          label="Consent Categories"
+          name="consentCategories"
+          value={userData.survey?.consentCategories.join(", ") || ""}
+          readOnly
+        /> 
       </div>
     </div>
   );

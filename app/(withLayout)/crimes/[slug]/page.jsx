@@ -11,7 +11,7 @@ import { formatDate } from "@/utils/functions";
 
 const CrimeReportPage = () => {
   const [crimeData, setCrimeData] = useState({
-    crimeType: "",
+    crimeType: null,
     location: "",
     additionalLocationDetails: "",
     time: "",
@@ -97,7 +97,7 @@ const CrimeReportPage = () => {
         <TextInput
           label="Crime Type"
           name="crimeType"
-          value={crimeData.crimeType || ""}
+          value={crimeData.crimeType?.type || ""}
           readOnly
         />
         <TextInput

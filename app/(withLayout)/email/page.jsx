@@ -26,7 +26,7 @@ const EmailPage = () => {
 
   return (
     <div className="container  ">
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} basePath={'/email'}/>
       <div className="mt-4">
         {activeTab === "send" && <SendTab />}
         {activeTab === "category" && <CategoryTab />}

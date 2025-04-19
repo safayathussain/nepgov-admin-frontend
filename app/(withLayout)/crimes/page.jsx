@@ -1,66 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Table from "@/components/common/Table";
-import { FetchApi } from "@/utils/FetchApi";
-import { formatDate } from "@/utils/functions";
+import { useSearchParams } from "next/navigation";
+import CrimesTab from "@/components/page/crime/CrimesTab";
+import TypesTab from "@/components/page/crime/TypesTab";
+import Tabs from "@/components/page/email/Tabs";
 
-const CrimeReportsPage = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+const CrimePage = () => {
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState("crimes");
 
-  const columns = [
-    { key: "crimeType", label: "Crime Type" },
-    { key: "location", label: "Location" },
-    { key: "time", label: "Time" },
-    { key: "hasVehicle", label: "Has Vehicle" },
-    { key: "hasWeapon", label: "Has Weapon" },
-    { key: "createdAt", label: "Reported At" },
-    { key: "crimeDetails", label: "Crime Details" },
+  const tabs = [
+    { label: "Crimes", value: "crimes" },
+    { label: "Types", value: "types" },
   ];
 
-  const getRowColor = (item) => {
-    if (!item.isSeenByAdmin) return "bg-red-200";
-    return "bg-white";
-  };
-
   useEffect(() => {
-    const fetchCrimeReports = async () => {
-      setLoading(true);
-      const response = await FetchApi({ url: "/crime" });
-      if (response?.data?.success) {
-        const formattedData = response.data.data.map((item) => ({
-          _id: item._id,
-          crimeType: item.crimeType,
-          location: item.location,
-          time: item?.time ? formatDate(item.time): 'Not provided',
-          crimeDetails: item.crimeDetails,
-          hasVehicle: item.hasVehicle,
-          hasWeapon: item.hasWeapon,
-          createdAt: formatDate(item.createdAt),
-          isSeenByAdmin: item.isSeenByAdmin,
-        }));
-
-        setData(formattedData);
-      }
-      setLoading(false);
-    };
-
-    fetchCrimeReports();
-  }, []);
+    const tab = searchParams.get("tab") || "crimes";
+    setActiveTab(tab);
+  }, [searchParams]);
 
   return (
-    <div className="w-full">
-      <Table
-        showAddButton={false}
-        data={data}
-        columns={columns}
-        searchableColumns={["crimeType", "location"]}
-        getRowColor={getRowColor}
-        loading={loading}
-      />
+    <div className="container">
+      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} basePath={"/crimes"}/>
+      <div className="mt-4">
+        {activeTab === "crimes" && <CrimesTab />}
+        {activeTab === "types" && <TypesTab />}
+      </div>
     </div>
   );
 };
 
-export default CrimeReportsPage;
+export default CrimePage;

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
-const Tabs = ({ tabs, activeTab, onTabChange }) => {
+const Tabs = ({ tabs, activeTab, onTabChange, basePath }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -11,10 +11,10 @@ const Tabs = ({ tabs, activeTab, onTabChange }) => {
     (tab) => {
       const params = new URLSearchParams(searchParams);
       params.set("tab", tab);
-      router.push(`/email?${params.toString()}`);
+      router.push(`${basePath}?${params.toString()}`);
       onTabChange(tab);
     },
-    [router, searchParams, onTabChange]
+    [router, searchParams, onTabChange, basePath]
   );
 
   return (

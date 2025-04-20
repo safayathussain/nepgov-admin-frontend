@@ -1,9 +1,12 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FetchApi } from "@/utils/FetchApi";
 import TextInput from "@/components/input/TextInput";
 import TextArea from "@/components/input/TextArea";
+import Button from "@/components/input/Button";
+import ConfirmModal from "@/components/modal/ConfirmModal";
 
 const UserDetailsPage = () => {
   const [userData, setUserData] = useState({
@@ -23,6 +26,7 @@ const UserDetailsPage = () => {
     survey: null,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { slug } = useParams();
   const router = useRouter();
 
@@ -43,6 +47,23 @@ const UserDetailsPage = () => {
       fetchUserData();
     }
   }, [slug]);
+
+  const handleDeleteUser = async () => {
+    setIsLoading(true);
+    try {
+      await FetchApi({
+        url: `/user/delete/${slug}`,
+        method: "delete",
+        isToast: true,
+        callback: () => router.push("/users"),
+      });
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+    } finally {
+      setIsLoading(false);
+      setIsDeleteModalOpen(false);
+    }
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -135,11 +156,12 @@ const UserDetailsPage = () => {
           readOnly
         />
       </div>
+
       <p className="text-2xl font-semibold mt-5">Profile Survey</p>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-3">
         <TextInput
           label="Reason For Joining"
-          name="politicalParty"
+          name="reasonForJoining"
           value={userData.survey?.reasonForJoining || ""}
           readOnly
         />
@@ -154,20 +176,37 @@ const UserDetailsPage = () => {
           name="ethnicity"
           value={userData.survey?.ethnicity || ""}
           readOnly
-        /> 
+        />
         <TextInput
           label="Highest Qualification"
           name="highestQualification"
           value={userData.survey?.highestQualification || ""}
           readOnly
-        /> 
+        />
         <TextArea
           label="Consent Categories"
           name="consentCategories"
-          value={userData.survey?.consentCategories.join(", ") || ""}
+          value={userData.survey?.consentCategories?.join(", ") || ""}
           readOnly
-        /> 
+        />
       </div>
+
+      <div className="mt-5">
+        <Button
+          variant="secondary"
+          onClick={() => setIsDeleteModalOpen(true)}
+          disabled={isLoading}
+        >
+          Delete User
+        </Button>
+      </div>
+
+      <ConfirmModal
+        title="Are you sure you want to delete this user?"
+        open={isDeleteModalOpen}
+        setOpen={setIsDeleteModalOpen}
+        nextFunc={handleDeleteUser}
+      />
     </div>
   );
 };

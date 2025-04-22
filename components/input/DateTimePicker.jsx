@@ -39,6 +39,7 @@ const DateTimePickerComponent = ({
             className="w-full border-primary"
             value={defaultValue}
             onChange={handleDateChange}
+            {...etc}
           />
         </div>
       </div>

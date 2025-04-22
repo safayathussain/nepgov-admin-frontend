@@ -18,6 +18,8 @@ const TrackerForm = () => {
     deletedOptions: [],
     categories: null,
     liveEndedAt: "",
+    liveStartedAt: "",
+    isUnlimited: false, 
   });
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +72,7 @@ const TrackerForm = () => {
                   : null,
               liveEndedAt: data.data.liveEndedAt || "",
               liveStartedAt: data.data.liveStartedAt || "",
+              isUnlimited: !data.data.liveEndedAt,  
               editedOptions: [],
               deletedOptions: [],
             });
@@ -85,7 +88,7 @@ const TrackerForm = () => {
   }, [slug, isEditing]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setIsLoading(true);
 
     // Filter out empty options
@@ -102,6 +105,7 @@ const TrackerForm = () => {
       ),
       deletedOptions: trackerData.deletedOptions,
       categories: trackerData.categories ? [trackerData.categories._id] : [],
+      liveEndedAt: trackerData.isUnlimited ? null : trackerData.liveEndedAt,  
     };
 
     const apiUrl = isEditing ? `/tracker/update/${slug}` : `/tracker/create`;
@@ -172,14 +176,39 @@ const TrackerForm = () => {
           }
           required
         />
-        <DateTimePicker
-          label="Live End Date"
-          value={trackerData.liveEndedAt}
-          onChange={(value) =>
-            setTrackerData({ ...trackerData, liveEndedAt: value })
-          }
-          required
-        />
+        <div className="flex flex-col space-y-2">
+          <DateTimePicker
+            disabled={trackerData.isUnlimited}
+            label="Live End Date"
+            value={trackerData.liveEndedAt}
+            onChange={(value) =>
+              setTrackerData({ ...trackerData, liveEndedAt: value })
+            }
+            required={!trackerData.isUnlimited}
+          />
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="unlimited"
+              checked={trackerData.isUnlimited}
+              onChange={(e) =>
+                setTrackerData({
+                  ...trackerData,
+                  isUnlimited: e.target.checked,
+                  liveEndedAt: e.target.checked ? "" : trackerData.liveEndedAt,
+                })
+              }
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label
+              htmlFor="unlimited"
+              className="text-black text-[15px] cursor-pointer"
+            >
+              Unlimited Duration
+            </label>
+          </div>
+        </div>
       </div>
       <div>
         <label className="block text-black text-[15px] mb-1">
@@ -192,7 +221,10 @@ const TrackerForm = () => {
               color: "#000000",
             };
             return (
-              <div key={index} className="flex space-x-2 items-center lg:w-1/2 lg:pr-5">
+              <div
+                key={index}
+                className="flex space-x-2 items-center lg:w-1/2 lg:pr-5"
+              >
                 <TextInput
                   placeholder={`Option ${index + 1}`}
                   value={option.content || ""}
@@ -214,7 +246,7 @@ const TrackerForm = () => {
 
                     if (newOptions[index]._id) {
                       // If content is cleared, remove from editedOptions
-                      if (!newContent.trim()) {
+                      if (!newColor.trim()) {
                         editedOptions = editedOptions.filter(
                           (opt) => opt._id !== newOptions[index]._id
                         );

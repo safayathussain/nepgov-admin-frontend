@@ -4,14 +4,14 @@ import { BiImageAdd } from "react-icons/bi";
 
 const FileInput = ({ img, setImg }) => {
   const [profilePicturePreview, setProfilePicturePreview] = useState(img);
-  const [aspectRatio, setAspectRatio] = useState(1.7); 
+  const [aspectRatio, setAspectRatio] = useState(1.7);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setProfilePicturePreview(previewUrl);
-      setImg(file);  
+      setImg(file);
       const imgElement = new Image();
       imgElement.src = previewUrl;
       imgElement.onload = () => {
@@ -32,7 +32,7 @@ const FileInput = ({ img, setImg }) => {
       };
     }
   }, [img]);
-
+  console.log();
   return (
     <div>
       <div
@@ -47,7 +47,8 @@ const FileInput = ({ img, setImg }) => {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           onChange={handleFileChange}
         />
-        {profilePicturePreview !== process.env.NEXT_PUBLIC_BASE_IMAGE_API ? (
+        {profilePicturePreview !== process.env.NEXT_PUBLIC_BASE_IMAGE_API &&
+        profilePicturePreview !== "" ? (
           <img
             src={profilePicturePreview}
             alt="Preview"

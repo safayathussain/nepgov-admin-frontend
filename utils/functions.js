@@ -45,7 +45,7 @@ export const getLiveStatus = (start, end) => {
       className: "text-warning",
       label: "Scheduled",
     };
-  } else if (currentDate >= startDate && currentDate <= endDate) {
+  } else if ((currentDate >= startDate && currentDate <= endDate) || !end) {
     return { status: "active", className: "text-secondary", label: "Live" };
   } else {
     return { status: "closed", className: "text-success", label: "Ended" };
@@ -63,7 +63,7 @@ export const isTokenExpired = (accessToken) => {
   if (!accessToken) return true;
 
   try {
-    const decoded =  jwtDecode(accessToken);
+    const decoded = jwtDecode(accessToken);
     return !decoded.exp || decoded.exp * 1000 < Date.now();
   } catch (error) {
     return true; // If decoding fails, assume the token is invalid/expired

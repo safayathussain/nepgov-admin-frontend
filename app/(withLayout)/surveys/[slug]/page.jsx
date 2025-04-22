@@ -23,7 +23,9 @@ const SurveyForm = () => {
     liveEndedAt: "",
     liveStartedAt: "",
     thumbnail: "",
+    isUnlimited: false,
   });
+  const [thumbnailPreview, setThumbnailPreview] = useState(""); // New state for thumbnail preview URL
   const [activeTab, setActiveTab] = useState("basics");
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,6 @@ const SurveyForm = () => {
   const router = useRouter();
   const isEditing = slug !== "add";
 
-  // Memoized fetch function to prevent recreating it on each render
   const fetchCategories = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -53,7 +54,6 @@ const SurveyForm = () => {
     }
   }, []);
 
-  // Memoized fetch survey data function
   const fetchSurveyData = useCallback(async () => {
     if (!isEditing) return;
 
@@ -61,6 +61,9 @@ const SurveyForm = () => {
     try {
       const { data } = await FetchApi({ url: `/survey/${slug}` });
       if (data?.data) {
+        const thumbnailUrl = data.data.thumbnail
+          ? `${process.env.NEXT_PUBLIC_BASE_IMAGE_API}${data.data.thumbnail}`
+          : "";
         setSurveyData({
           topic: data.data.topic,
           questions:
@@ -75,7 +78,9 @@ const SurveyForm = () => {
           liveEndedAt: data.data.liveEndedAt || "",
           liveStartedAt: data.data.liveStartedAt || "",
           thumbnail: data.data.thumbnail || "",
+          isUnlimited: !data.data.liveEndedAt,
         });
+        setThumbnailPreview(thumbnailUrl);
       }
     } catch (error) {
       console.error("Failed to fetch survey:", error);
@@ -84,32 +89,33 @@ const SurveyForm = () => {
     }
   }, [slug, isEditing]);
 
-  // Fetch categories on mount
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  // Fetch survey data if editing
   useEffect(() => {
     fetchSurveyData();
   }, [fetchSurveyData]);
+ 
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+    };
+  }, [thumbnailPreview]);
 
-  // Track a question in updatedQuestions - 
   const trackQuestionUpdate = useCallback(
     (questionIndex) => {
       const question = surveyData.questions[questionIndex];
-      console.log(question);
-      // Only track questions with an ID (existing questions)
       if (!question?._id) return;
 
       setSurveyData((prev) => {
-        // Check if this question is already in updatedQuestions
         const existingIndex = prev.updatedQuestions.findIndex(
           (q) => q._id === question._id
         );
 
         if (existingIndex >= 0) {
-          // Question already exists in updatedQuestions, update it
           const updatedQuestions = [...prev.updatedQuestions];
           updatedQuestions[existingIndex] = {
             ...updatedQuestions[existingIndex],
@@ -123,7 +129,6 @@ const SurveyForm = () => {
             updatedQuestions,
           };
         } else {
-          // Add this question to updatedQuestions
           return {
             ...prev,
             updatedQuestions: [
@@ -142,7 +147,6 @@ const SurveyForm = () => {
     [surveyData.questions]
   );
 
-  // Handle option changes - 
   const handleOptionChange = useCallback(
     (questionIndex, optionIndex, field, value) => {
       setSurveyData((prev) => {
@@ -151,16 +155,13 @@ const SurveyForm = () => {
 
         if (!question || !question.options) return prev;
 
-        // Create a copy of the option with the updated field
         const updatedOption = {
           ...question.options[optionIndex],
           [field]: value,
         };
 
-        // Update the option in the question's options array
         question.options[optionIndex] = updatedOption;
 
-        // Track this option in the question's updatedOptions array
         if (updatedOption._id) {
           question.updatedOptions = [
             ...question.updatedOptions.filter(
@@ -182,12 +183,13 @@ const SurveyForm = () => {
         };
       });
 
-      // Track this question in updatedQuestions
-      trackQuestionUpdate(questionIndex);
+      if (surveyData.questions[questionIndex]?._id) {
+        trackQuestionUpdate(questionIndex);
+      }
     },
-    [trackQuestionUpdate]
+    [surveyData.questions, trackQuestionUpdate]
   );
-// Handle Question change
+
   const handleQuestionChange = useCallback((index, value) => {
     setSurveyData((prev) => {
       const newQuestions = [...prev.questions];
@@ -215,7 +217,6 @@ const SurveyForm = () => {
     });
   }, []);
 
-  // Add a new option to a question - 
   const addOption = useCallback(
     (questionIndex) => {
       setSurveyData((prev) => {
@@ -226,13 +227,11 @@ const SurveyForm = () => {
 
         const newOption = { content: "", color: "#000000", updateId: uuidv4() };
 
-        // Add the new option to the question's options array
         newQuestions[questionIndex] = {
           ...question,
           options: [...(question.options || []), newOption],
         };
 
-        // Add the new option to updatedOptions if this is an existing question
         if (question._id) {
           newQuestions[questionIndex].updatedOptions = [
             ...(newQuestions[questionIndex].updatedOptions || []),
@@ -243,7 +242,6 @@ const SurveyForm = () => {
         return { ...prev, questions: newQuestions };
       });
 
-      // Track this question in updatedQuestions if it has an ID
       if (surveyData.questions[questionIndex]?._id) {
         trackQuestionUpdate(questionIndex);
       }
@@ -251,7 +249,6 @@ const SurveyForm = () => {
     [surveyData.questions, trackQuestionUpdate]
   );
 
-  // Remove an option from a question -  
   const removeOption = useCallback((questionIndex, optionIndex) => {
     setSurveyData((prev) => {
       const newQuestions = [...prev.questions];
@@ -262,28 +259,23 @@ const SurveyForm = () => {
       const removedOption = question.options[optionIndex];
       if (!removedOption) return prev;
 
-      // Remove the option from the options array
       newQuestions[questionIndex] = {
         ...question,
         options: question.options.filter((_, i) => i !== optionIndex),
       };
 
-      // Check if this option has an ID (is an existing option)
       if (removedOption._id) {
-        // Add to deletedOptions if this option has an ID
         newQuestions[questionIndex].deletedOptions = [
           ...(newQuestions[questionIndex].deletedOptions || []),
           removedOption._id,
         ];
 
-        // Update updatedQuestions array
         const newUpdatedQuestions = [...prev.updatedQuestions];
         const updatedQuestionIndex = newUpdatedQuestions.findIndex(
           (q) => q._id === question._id
         );
 
         if (updatedQuestionIndex >= 0) {
-          // Question already exists in updatedQuestions, update its deletedOptions
           newUpdatedQuestions[updatedQuestionIndex] = {
             ...newUpdatedQuestions[updatedQuestionIndex],
             deletedOptions: [
@@ -292,31 +284,22 @@ const SurveyForm = () => {
               removedOption._id,
             ],
           };
-
-          return {
-            ...prev,
-            questions: newQuestions,
-            updatedQuestions: newUpdatedQuestions,
-          };
         } else {
-          // Question doesn't exist in updatedQuestions, add it
-          return {
-            ...prev,
-            questions: newQuestions,
-            updatedQuestions: [
-              ...prev.updatedQuestions,
-              {
-                _id: question._id,
-                question: question.question,
-                updatedOptions: question.updatedOptions || [],
-                deletedOptions: [removedOption._id],
-              },
-            ],
-          };
+          newUpdatedQuestions.push({
+            _id: question._id,
+            question: question.question,
+            updatedOptions: question.updatedOptions || [],
+            deletedOptions: [removedOption._id],
+          });
         }
+
+        return {
+          ...prev,
+          questions: newQuestions,
+          updatedQuestions: newUpdatedQuestions,
+        };
       }
 
-      // If option doesn't have an ID, just update questions
       return {
         ...prev,
         questions: newQuestions,
@@ -324,7 +307,6 @@ const SurveyForm = () => {
     });
   }, []);
 
-  // Remove a question - 
   const removeQuestion = useCallback(
     (index) => {
       setSurveyData((prev) => {
@@ -333,12 +315,10 @@ const SurveyForm = () => {
 
         const newDeletedQuestions = [...prev.deletedQuestions];
 
-        // Add to deletedQuestions if this question has an ID
         if (questionToRemove._id) {
           newDeletedQuestions.push(questionToRemove._id);
         }
 
-        // Remove from updatedQuestions if it exists there
         const newUpdatedQuestions = prev.updatedQuestions.filter(
           (q) => q._id !== questionToRemove._id
         );
@@ -351,7 +331,6 @@ const SurveyForm = () => {
         };
       });
 
-      // Switch to the previous tab if the active tab is deleted
       if (activeTab === `question-${index}`) {
         setActiveTab(index === 0 ? "basics" : `question-${index - 1}`);
       }
@@ -359,7 +338,6 @@ const SurveyForm = () => {
     [activeTab]
   );
 
-  // Add a new question - 
   const addQuestion = useCallback(() => {
     setSurveyData((prev) => {
       const newQuestion = {
@@ -377,7 +355,6 @@ const SurveyForm = () => {
     setActiveTab(`question-${surveyData.questions.length}`);
   }, [surveyData.questions.length]);
 
-  // Handle form submission - 
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -386,13 +363,15 @@ const SurveyForm = () => {
       const formData = new FormData();
       formData.append("topic", surveyData.topic);
       formData.append("categories[0]", surveyData.categories?._id || "");
-      formData.append("liveEndedAt", surveyData.liveEndedAt);
+      formData.append(
+        "liveEndedAt",
+        surveyData.isUnlimited ? "" : surveyData.liveEndedAt
+      );
       formData.append("liveStartedAt", surveyData.liveStartedAt);
       if (surveyData.thumbnail instanceof File) {
         formData.append("thumbnail", surveyData.thumbnail);
       }
 
-      // Add newly created questions
       const newQuestions = surveyData.questions.filter((q) => !q._id);
       newQuestions.forEach((q, qIndex) => {
         formData.append(`questions[${qIndex}][question]`, q.question);
@@ -408,25 +387,19 @@ const SurveyForm = () => {
         });
       });
 
-      // Process updated questions to match the backend expectations
       surveyData.updatedQuestions.forEach((q, qIndex) => {
         formData.append(`updatedQuestions[${qIndex}][_id]`, q._id);
         formData.append(`updatedQuestions[${qIndex}][question]`, q.question);
-
-        // Convert updatedOptions array to JSON string
         formData.append(
           `updatedQuestions[${qIndex}][updatedOptions]`,
           JSON.stringify(q.updatedOptions || [])
         );
-
-        // Convert deletedOptions array to JSON string
         formData.append(
           `updatedQuestions[${qIndex}][deletedOptions]`,
           JSON.stringify(q.deletedOptions || [])
         );
       });
 
-      // Add deleted questions
       formData.append(
         "deletedQuestions",
         JSON.stringify(surveyData.deletedQuestions)
@@ -451,8 +424,7 @@ const SurveyForm = () => {
     },
     [surveyData, isEditing, slug, router]
   );
-
-  // Handle survey deletion - 
+console.log(surveyData.isUnlimited)
   const handleDeleteSurvey = useCallback(async () => {
     try {
       await FetchApi({
@@ -510,14 +482,14 @@ const SurveyForm = () => {
         <div className="space-y-6">
           <FileInput
             label="Thumbnail"
-            img={
-              typeof surveyData.thumbnail === "string"
-                ? process.env.NEXT_PUBLIC_BASE_IMAGE_API + surveyData.thumbnail
-                : surveyData.thumbnail
-            }
-            setImg={(file) =>
-              setSurveyData((prev) => ({ ...prev, thumbnail: file }))
-            }
+            img={thumbnailPreview}
+            setImg={(file) => { 
+              if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
+                URL.revokeObjectURL(thumbnailPreview);
+              } 
+              setSurveyData((prev) => ({ ...prev, thumbnail: file }));
+              setThumbnailPreview(file ? URL.createObjectURL(file) : "");
+            }}
           />
           <TextInput
             label="Topic"
@@ -527,7 +499,6 @@ const SurveyForm = () => {
             }
             required
           />
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <DropdownInput
               label="Select Category"
@@ -541,25 +512,47 @@ const SurveyForm = () => {
                 }))
               }
             />
-            <div className="hidden md:block">
-
-            </div>
-              <DateTimePicker
-                label="Live Start Date"
-                value={surveyData.liveStartedAt}
-                onChange={(value) =>
-                  setSurveyData((prev) => ({ ...prev, liveStartedAt: value }))
-                }
-                required
-              />
+            <div className="hidden md:block"></div>
             <DateTimePicker
-              label="Live End Date"
-              value={surveyData.liveEndedAt}
+              label="Live Start Date"
+              value={surveyData.liveStartedAt}
               onChange={(value) =>
-                setSurveyData((prev) => ({ ...prev, liveEndedAt: value }))
+                setSurveyData((prev) => ({ ...prev, liveStartedAt: value }))
               }
               required
             />
+            <div className="flex flex-col space-y-2">
+              <DateTimePicker
+                disabled={surveyData.isUnlimited}
+                label="Live End Date"
+                value={surveyData.liveEndedAt}
+                onChange={(value) =>
+                  setSurveyData((prev) => ({ ...prev, liveEndedAt: value }))
+                }
+                required={!surveyData.isUnlimited}
+              />
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="unlimited"
+                  checked={surveyData.isUnlimited}
+                  onChange={(e) =>
+                    setSurveyData((prev) => ({
+                      ...prev,
+                      isUnlimited: e.target.checked,
+                      liveEndedAt: e.target.checked ? "" : prev.liveEndedAt,
+                    }))
+                  }
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label
+                  htmlFor="unlimited"
+                  className="text-black text-[15px] cursor-pointer"
+                >
+                  Unlimited Duration
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -574,7 +567,6 @@ const SurveyForm = () => {
                 onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
                 required
               />
-
               <div className="space-y-4">
                 <h3 className="text-sm font-medium">Options</h3>
                 {question.options.map((option, oIndex) => (
@@ -615,7 +607,6 @@ const SurveyForm = () => {
                     </Button>
                   </div>
                 ))}
-
                 <Button type="button" onClick={() => addOption(qIndex)}>
                   Add Option
                 </Button>
@@ -648,7 +639,6 @@ const SurveyForm = () => {
         title="Are you sure you want to delete this survey?"
         open={isDeleteModalOpen}
         setOpen={setIsDeleteModalOpen}
-        
         nextFunc={handleDeleteSurvey}
       />
     </form>

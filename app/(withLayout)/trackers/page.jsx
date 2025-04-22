@@ -31,7 +31,9 @@ const Page = () => {
           topic: item.topic,
           user: item.user,
           options: item.options.map((option) => option.content).join(", "),
-          liveEndedAt: formatDate(item.liveEndedAt),
+          liveEndedAt: item.liveEndedAt
+            ? formatDate(item.liveEndedAt)
+            : "Unlimited",
           liveStartedAt: formatDate(item.liveStartedAt),
           createdAt: formatDate(item.createdAt),
           categories: item.categories
@@ -61,7 +63,7 @@ const Page = () => {
         showLiveStatus={true}
         data={data}
         columns={columns}
-        searchableColumns={["topic","categories"]}
+        searchableColumns={["topic", "categories"]}
         loading={loading}
       />
     </div>

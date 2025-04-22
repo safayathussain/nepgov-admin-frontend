@@ -50,7 +50,9 @@ const SurveyTable = () => {
               .map((category) => category.name)
               .join(", "),
             totalVotes,
-            liveEndedAt: formatDate(item.liveEndedAt),
+            liveEndedAt: item.liveEndedAt
+              ? formatDate(item.liveEndedAt)
+              : "Unlimited",
             liveStartedAt: formatDate(item.liveStartedAt),
             createdAt: formatDate(item.createdAt),
             status: (() => {

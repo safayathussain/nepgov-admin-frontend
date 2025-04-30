@@ -31,8 +31,9 @@ const TextEditor = ({
         process: function (response) {
           if (response?.data?.files) {
             return {
-              files: response.data.files?.map((file) =>
-                `${process.env.NEXT_PUBLIC_BASE_IMAGE_API}/uploads/${file?.savedName}`
+              files: response.data.files?.map(
+                (file) =>
+                  `${process.env.NEXT_PUBLIC_BASE_IMAGE_API}${file?.key}`
               ),
               path: process.env.NEXT_PUBLIC_BASE_IMAGE_API,
               baseurl: process.env.NEXT_PUBLIC_BASE_IMAGE_API,
@@ -61,9 +62,9 @@ const TextEditor = ({
       showXPathInStatusbar: false,
       buttons:
         "bold,italic,underline,strikethrough,ul,fontsize,paragraph,image,hr,table,link,indent,outdent,left,brush,undo,redo",
-        extraButtons: extraButtons
+      extraButtons: extraButtons,
     }),
-    [ ]
+    []
   );
 
   useEffect(() => {

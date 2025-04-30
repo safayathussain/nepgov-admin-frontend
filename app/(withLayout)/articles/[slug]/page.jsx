@@ -85,7 +85,9 @@ const ManageArticle = () => {
       const formData = new FormData();
       formData.append("title", articleData.title);
       formData.append("content", articleData.content);
-      formData.append("categories[0]", articleData.categories);
+      if (articleData.categories.length > 0) {
+        formData.append("categories[0]", articleData.categories);
+      }
       if (articleData.thumbnail) {
         formData.append("thumbnail", articleData.thumbnail);
       }
